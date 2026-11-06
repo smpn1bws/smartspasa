@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMARTSPASA ASSESSMENT</title>
     <!-- Favicon Inline SVG Data URI -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><path d='M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 16h2v2h-2zm0-6h2v4h-2z'/></svg>">
+    <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1WW8IClnvrY9d5a16vhFRSeHcvUOIlEI2">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -65,7 +65,7 @@
     <div id="gasWarningBanner" class="bg-amber-500 text-slate-900 text-xs px-4 py-2 font-bold flex items-center justify-between border-b border-amber-600 hidden">
         <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-slate-900 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            <span>MODE PRODUKSI TEMPLATE: Silakan tempelkan Web App URL Google Apps Script Anda pada variabel <code>GAS_WEB_APP_URL</code> di file index.html agar terhubung ke database live.</span>
+            <span>MODE PRODUKSI: Silakan masukkan Web App URL Google Apps Script pada variabel <code>GAS_WEB_APP_URL</code> di index.html.</span>
         </div>
         <button onclick="document.getElementById('gasWarningBanner').remove()" class="text-slate-900 font-extrabold px-2">&times;</button>
     </div>
@@ -75,7 +75,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div id="appLogoContainer" class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl overflow-hidden shadow-sm">
-                    <span id="appLogoText">S</span>
+                    <span id="appLogoText">SMARTSPASA</span>
                     <img id="appLogoImg" src="" alt="Logo Sekolah" class="w-full h-full object-cover hidden">
                 </div>
                 <div>
@@ -128,7 +128,7 @@
 
                 <div class="text-center mb-6">
                     <h2 class="text-2xl font-black text-slate-900 tracking-tight" id="heroBannerTitle">SMARTSPASA ASSESSMENT</h2>
-                    <p id="subEventStatus" class="text-xs font-bold text-blue-600 tracking-wider uppercase mt-1">EDISI KE-27</p>
+                    <p id="subEventStatus" class="text-xs font-bold text-blue-600 tracking-wider uppercase mt-1">EDISI EVENT</p>
                     <p class="text-xs text-slate-500 font-medium mt-0.5">UPTD SPF SMP Negeri 1 Bondowoso</p>
                 </div>
 
@@ -138,7 +138,8 @@
                         <select id="mainLoginRole" onchange="toggleMainLoginRole()" class="w-full px-4 py-3 text-xs font-bold text-slate-800 bg-white border-2 border-blue-500 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 cursor-pointer">
                             <option value="UMUM">Publik / Umum (Pencarian Hasil)</option>
                             <option value="JURI">Penilai Lomba / Juri</option>
-                            <option value="ADMIN">Administrator</option>
+                            <option value="PANITIA">Panitia (Organizer)</option>
+                            <option value="ADMIN">Super Admin</option>
                         </select>
                     </div>
 
@@ -150,7 +151,7 @@
                         </button>
                     </div>
 
-                    <!-- Input Login Juri -->
+                    <!-- Input Login Juri (Dynamic N-Juri Matrix PIN Slot) -->
                     <div id="mainWrapperJuri" class="space-y-3 hidden pt-1">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Cabang Lomba</label>
@@ -159,22 +160,33 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Rahasia Penilai Lomba</label>
-                            <input type="password" id="mainPinJuri" placeholder="Masukkan PIN Juri..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Penilai (Contoh: wxyz-J1, wxyz-J2)</label>
+                            <input type="password" id="mainPinJuri" placeholder="Masukkan PIN Juri Slot Ke-N..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
                         <button onclick="execMainLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-xs font-bold transition shadow-md shadow-blue-500/20">
                             Masuk Sesi Penilai Juri
                         </button>
                     </div>
 
+                    <!-- Input Login Panitia -->
+                    <div id="mainWrapperPanitia" class="space-y-3 hidden pt-1">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Rahasia Panitia</label>
+                            <input type="password" id="mainPinPanitia" placeholder="Masukkan PIN Panitia..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button onclick="execMainLogin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-xs font-bold transition shadow-md">
+                            Masuk Portal Panitia
+                        </button>
+                    </div>
+
                     <!-- Input Login Admin -->
                     <div id="mainWrapperAdmin" class="space-y-3 hidden pt-1">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Master Administrator</label>
-                            <input type="password" id="mainPinAdmin" placeholder="Masukkan PIN Master (Default: 123456)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Master Super Admin</label>
+                            <input type="password" id="mainPinAdmin" placeholder="Masukkan PIN Master Super Admin..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
                         <button onclick="execMainLogin()" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-xl text-xs font-bold transition shadow-md">
-                            Masuk Sesi Administrator
+                            Masuk Sesi Super Admin
                         </button>
                     </div>
                 </div>
@@ -193,7 +205,7 @@
                 <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                     <div>
                         <span class="bg-emerald-500/30 text-emerald-200 text-xs px-3 py-1 rounded-full border border-emerald-400/30 font-semibold">Pengumuman Hasil Resmi</span>
-                        <h2 class="text-xl sm:text-2xl font-bold mt-2" id="bannerTitleUmum">SMARTSPASA KE-27 ASSESSMENT</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold mt-2" id="bannerTitleUmum">SMARTSPASA ASSESSMENT</h2>
                         <p class="text-slate-300 text-xs mt-1">Perolehan nilai rata-rata resmi tim juri yang telah disahkan oleh Ketua Pelaksana.</p>
                     </div>
                     <button onclick="handleLogout()" class="self-start sm:self-auto text-xs bg-white/10 hover:bg-white/20 text-white border border-white/20 px-3 py-1.5 rounded-lg font-semibold transition">
@@ -215,7 +227,7 @@
                     </div>
                     <div class="pt-2 border-t border-slate-100">
                         <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Publikasi:</span>
-                        <p class="text-xs text-slate-600 leading-normal">Nilai bertanda <span class="font-bold text-amber-600">***</span> menunjukkan status nilai masih dalam tahap rekapitulasi draft / belum disahkan Admin.</p>
+                        <p class="text-xs text-slate-600 leading-normal">Nilai bertanda <span class="font-bold text-amber-600">***</span> menunjukkan nilai masih dalam tahap rekapitulasi draft / belum 100% lengkap (Mode Strict).</p>
                     </div>
                 </div>
 
@@ -238,14 +250,12 @@
                                     <th class="p-2.5 font-bold">Nama Peserta</th>
                                     <th class="p-2.5 font-bold">Asal Sekolah</th>
                                     <th class="p-2.5 font-bold">Cabang Lomba</th>
-                                    <th class="p-2.5 font-bold text-center">Nilai Akhir (Mean)</th>
+                                    <th class="p-2.5 font-bold text-center">Nilai Akhir (Rata-Rata)</th>
                                     <th class="p-2.5 font-bold text-center">Status / Peringkat</th>
                                 </tr>
                             </thead>
                             <tbody id="tabelHasilUmum" class="divide-y divide-slate-200">
-                                <!-- Skeleton Shimmer Loading Defaults -->
-                                <tr><td colspan="6" class="p-4"><div class="h-4 skeleton rounded w-full"></div></td></tr>
-                                <tr><td colspan="6" class="p-4"><div class="h-4 skeleton rounded w-full"></div></td></tr>
+                                <tr><td colspan="6" class="p-4 text-center text-slate-400">Memuat data dari server...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -277,7 +287,7 @@
                 <div class="bento-card p-6 lg:col-span-1 space-y-4">
                     <div>
                         <h3 class="text-sm font-bold text-slate-900">Identitas Penilai Lomba</h3>
-                        <p class="text-[11px] text-slate-500">Hak Akses Pengisian Nilai Sesuai Kategori</p>
+                        <p class="text-[11px] text-slate-500">Slot Juri Terbaca Otomatis dari PIN Dynamic Matrix</p>
                     </div>
                     
                     <div class="space-y-3">
@@ -285,19 +295,29 @@
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Cabang Lomba Ditugaskan</label>
                             <input type="text" id="juriLombaActiveName" readonly class="w-full px-3 py-2 text-xs bg-slate-100 border border-slate-300 rounded-lg font-bold text-blue-700">
                         </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Slot Juri Ke-N</label>
+                                <input type="text" id="juriIndexActive" readonly class="w-full px-3 py-2 text-xs bg-blue-50 border border-blue-200 text-blue-800 rounded-lg font-black text-center">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Total Juri Lomba</label>
+                                <input type="text" id="juriTotalCountActive" readonly class="w-full px-3 py-2 text-xs bg-slate-100 border border-slate-300 text-slate-700 rounded-lg font-bold text-center">
+                            </div>
+                        </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Juri / Penilai</label>
-                            <input type="text" id="inputNamaJuriActive" placeholder="Contoh: Drs. Ahmad Hidayat" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-semibold">
+                            <input type="text" id="inputNamaJuriActive" placeholder="Ketik nama juri..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-semibold">
                         </div>
                     </div>
                 </div>
 
-                <!-- Konfigurasi Indikator Lomba (Sinkronisasi Multi-Juri) -->
+                <!-- Konfigurasi Indikator Lomba -->
                 <div class="bento-card p-6 lg:col-span-2 space-y-3">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-sm font-bold text-slate-900">Indikator & Bobot Penilaian Lomba</h3>
-                            <p class="text-[11px] text-slate-500">Juri pertama membuat indikator, Juri lainnya mengikuti format indikator. Total bobot WAJIB 100%.</p>
+                            <p class="text-[11px] text-slate-500">Struktur indikator berlaku untuk seluruh juri pada cabang ini. Total bobot WAJIB 100%.</p>
                         </div>
                         <button onclick="tambahRowIndikator()" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">
                             + Indikator
@@ -320,10 +340,10 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                         <h3 class="text-sm font-bold text-slate-900">Lembar Penilaian Peserta Lomba</h3>
-                        <p class="text-[11px] text-slate-500">Input skor per indikator (0 - 100). Sistem otomatis menghitung bobot nilai akhir juri.</p>
+                        <p class="text-[11px] text-slate-500">Input skor per indikator (0 - 100). Nilai tersimpan terpisah per slot juri.</p>
                     </div>
                     <button onclick="openModalTambahPesertaJuri()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
-                        + Tambah Peserta On-The-Spot
+                        + Tambah Peserta OTS
                     </button>
                 </div>
 
@@ -348,12 +368,12 @@
             </div>
         </section>
 
-        <!-- ================= HALAMAN 4: PENGATURAN ADMINISTRATOR ================= -->
+        <!-- ================= HALAMAN 4: PENGATURAN SUPER ADMIN ================= -->
         <section id="pageAdmin" class="space-y-6 hidden">
-            <!-- Grid 1: Identitas & Media Berkas (Kop & Logo) -->
+            <!-- Grid 1: Identitas & Media Berkas -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bento-card p-6 lg:col-span-1 space-y-3">
-                    <h3 class="text-sm font-bold text-slate-900">Pengaturan Identitas Event</h3>
+                    <h3 class="text-sm font-bold text-slate-900">Pengaturan Event & Keamanan PIN</h3>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">SMARTSPASA KE-</label>
                         <input type="text" id="adminEdisi" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-semibold">
@@ -367,11 +387,22 @@
                         <input type="text" id="adminNipKetua" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-semibold">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">PIN Master Administrator</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">PIN Master Super Admin</label>
                         <input type="password" id="adminPin" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-semibold">
                     </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">PIN Rahasia Panitia (Organizer)</label>
+                        <input type="password" id="adminPinPanitia" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mode Ranking Publik</label>
+                        <select id="adminModeRanking" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-bold text-blue-700">
+                            <option value="STRICT">Strict Complete (Publikasi Setelah 100% Juri Menilai)</option>
+                            <option value="LIVE">Live Average (Tampilkan Langsung Rata-Rata Sementara)</option>
+                        </select>
+                    </div>
                     <button onclick="simpanPengaturanEvent()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-xs font-bold transition">
-                        Simpan Identitas Event
+                        Simpan Identitas & Sakelar Mode
                     </button>
                 </div>
 
@@ -408,12 +439,12 @@
                 </div>
             </div>
 
-            <!-- Grid 2: Kelola Jenis Lomba & Status Otorisasi -->
+            <!-- Grid 2: Kelola Cabang Lomba & Dynamic N-Juri Configuration -->
             <div class="bento-card p-6 space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-sm font-bold text-slate-900">Kelola Cabang Lomba & Otorisasi Pengumuman</h3>
-                        <p class="text-[11px] text-slate-500">Tetapkan PIN Juri per cabang lomba dan kunci/sahkan penetapan nilai untuk dipublikasikan ke publik.</p>
+                        <h3 class="text-sm font-bold text-slate-900">Kelola Cabang Lomba & Pengaturan N-Juri Dinamis</h3>
+                        <p class="text-[11px] text-slate-500">Tentukan jumlah juri (misal: 1, 3, 5, 7) per cabang lomba. PIN Juri dibuat otomatis berformat slot (`{PIN}-J1`, `{PIN}-J2`, dst.).</p>
                     </div>
                     <button onclick="openModalTambahLomba()" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
                         + Tambah Cabang Lomba
@@ -425,7 +456,8 @@
                             <tr class="bg-slate-100 text-slate-600 border-b">
                                 <th class="p-2.5 font-bold">ID Lomba</th>
                                 <th class="p-2.5 font-bold">Nama Cabang Lomba</th>
-                                <th class="p-2.5 font-bold">PIN Penilai Juri</th>
+                                <th class="p-2.5 font-bold text-center">Jumlah Juri (N)</th>
+                                <th class="p-2.5 font-bold">Base PIN Juri</th>
                                 <th class="p-2.5 font-bold">Status Otorisasi Pengumuman</th>
                                 <th class="p-2.5 font-bold text-center">Aksi Otorisasi</th>
                             </tr>
@@ -543,8 +575,12 @@
                     <input type="text" id="adminNewNamaLomba" placeholder="Contoh: Lomba Solo Vocal" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-semibold">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">PIN Rahasia Juri Penilai</label>
-                    <input type="text" id="adminNewPinJuri" placeholder="Contoh: 5566" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-semibold">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Jumlah Juri Penilai (N)</label>
+                    <input type="number" id="adminNewJumlahJuri" min="1" max="15" value="3" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-bold text-blue-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Base PIN Rahasia Juri</label>
+                    <input type="text" id="adminNewPinJuri" placeholder="Contoh: wxyz (Sistem akan membuat wxyz-J1, wxyz-J2...)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-semibold">
                 </div>
             </div>
             <div class="pt-2 flex justify-end gap-2">
@@ -558,16 +594,18 @@
     <script>
         /**
          * PLACEHOLDER URL GOOGLE APPS SCRIPT WEB APP
-         * Tempelkan URL deployment Apps Script Anda di bawah ini setelah melakukan Deploy as Web App.
+         * Tempelkan URL deployment Web App Apps Script Anda di bawah ini:
          */
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzyvnBE1X-KRjRhEcgDlfLaa69AhM3GK8ypfZPdix0fpj_PYw4In8GoKTa8RctApXm_/exec";
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwJ6Y0P8GdFq4zrP5yQ2VBWjBA3xuHL5Jtw4rBTPgG1GWwh0Bp8uV_HGXKiesZJt_7xbQ/exec";
 
-        // State Utama Aplikasi (ARRAY KOSONG [] UNTUK PRODUKSI LIVE)
+        // State Utama Aplikasi (KOSONG UNTUK PRODUCTION LIVE)
         let APP_CONFIG = {
             edisi: '27',
             ketua: 'Drs. Heru Purwanto, M.Pd.',
             nipKetua: '19750812 200003 1 004',
             pinAdmin: '123456',
+            pinPanitia: '888999',
+            modeRanking: 'STRICT',
             logoBase64: '',
             kopBase64: ''
         };
@@ -578,6 +616,7 @@
 
         let currentRole = 'NONE'; 
         let currentActiveLombaId = '';
+        let currentActiveJuriIndex = 1;
         let currentActiveJuriName = '';
 
         // State Pagination & Debounce Search
@@ -585,8 +624,7 @@
         let searchDebounceTimer = null;
 
         window.onload = function() {
-            // Tampilkan Peringatan Jika URL GAS belum dipasang
-            if (GAS_WEB_APP_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE" || !GAS_WEB_APP_URL) {
+            if (!GAS_WEB_APP_URL) {
                 const banner = document.getElementById('gasWarningBanner');
                 if (banner) banner.classList.remove('hidden');
             }
@@ -597,9 +635,9 @@
 
         // FETCH INITIAL DATABASE FROM GOOGLE APPS SCRIPT SERVER
         async function fetchDatabaseInitial() {
-            showLoading(true, "Memuat data database dari Google Sheets...");
+            showLoading(true, "Memuat data dari server Google Sheets...");
             try {
-                if (GAS_WEB_APP_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE" || !GAS_WEB_APP_URL) {
+                if (!GAS_WEB_APP_URL) {
                     showLoading(false);
                     renderAppUi();
                     return;
@@ -626,7 +664,7 @@
                 }
             } catch (err) {
                 console.error("Gagal fetch server:", err);
-                showToast("Server Offline / URL GAS Belum Dikonfigurasi.", "danger");
+                showToast("Gagal memuat server Google Sheets.", "danger");
             } finally {
                 showLoading(false);
                 populateDropdowns();
@@ -637,8 +675,8 @@
 
         // BACKEND POST API MUTATION HANDLER WITH SILENT RETRY
         async function postToGAS(action, payload, retryCount = 0) {
-            if (GAS_WEB_APP_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE" || !GAS_WEB_APP_URL) {
-                showToast("Simulasi Lokal: Perubahan tersimpan secara temporary.", "info");
+            if (!GAS_WEB_APP_URL) {
+                showToast("Mode Demo / URL belum diset.", "info");
                 return { status: 'success' };
             }
 
@@ -665,22 +703,24 @@
             }
         }
 
-        // PERSISTENSI SESI LOGIN TERENKRIPSI RINGAN TAHAN REFRESH
         function restoreSession() {
             const savedRole = sessionStorage.getItem('SMARTSPASA_ROLE');
             if (savedRole && savedRole !== 'NONE') {
                 currentRole = savedRole;
                 currentActiveLombaId = sessionStorage.getItem('SMARTSPASA_LOMBA') || '';
+                currentActiveJuriIndex = parseInt(sessionStorage.getItem('SMARTSPASA_JURI_INDEX') || '1');
                 currentActiveJuriName = sessionStorage.getItem('SMARTSPASA_JURI_NAME') || '';
             }
         }
 
-        function saveSession(role, lombaId = '', juriName = '') {
+        function saveSession(role, lombaId = '', juriIndex = 1, juriName = '') {
             currentRole = role;
             currentActiveLombaId = lombaId;
+            currentActiveJuriIndex = juriIndex;
             currentActiveJuriName = juriName;
             sessionStorage.setItem('SMARTSPASA_ROLE', role);
             sessionStorage.setItem('SMARTSPASA_LOMBA', lombaId);
+            sessionStorage.setItem('SMARTSPASA_JURI_INDEX', juriIndex);
             sessionStorage.setItem('SMARTSPASA_JURI_NAME', juriName);
         }
 
@@ -698,14 +738,17 @@
 
             const wrapUmum = document.getElementById('mainWrapperUmum');
             const wrapJuri = document.getElementById('mainWrapperJuri');
+            const wrapPanitia = document.getElementById('mainWrapperPanitia');
             const wrapAdmin = document.getElementById('mainWrapperAdmin');
 
             if (wrapUmum) wrapUmum.classList.add('hidden');
             if (wrapJuri) wrapJuri.classList.add('hidden');
+            if (wrapPanitia) wrapPanitia.classList.add('hidden');
             if (wrapAdmin) wrapAdmin.classList.add('hidden');
 
             if (role === 'UMUM' && wrapUmum) wrapUmum.classList.remove('hidden');
             if (role === 'JURI' && wrapJuri) wrapJuri.classList.remove('hidden');
+            if (role === 'PANITIA' && wrapPanitia) wrapPanitia.classList.remove('hidden');
             if (role === 'ADMIN' && wrapAdmin) wrapAdmin.classList.remove('hidden');
         }
 
@@ -716,38 +759,66 @@
                 saveSession('UMUM');
                 showToast('Membuka Akses Hasil Publik...', 'info');
                 renderAppUi();
-                switchTab('umum');
             } else if (role === 'ADMIN') {
                 const pin = document.getElementById('mainPinAdmin').value.trim();
                 if (pin === APP_CONFIG.pinAdmin) {
                     saveSession('ADMIN');
-                    showToast('Login Administrator Berhasil!', 'success');
+                    showToast('Login Super Admin Berhasil!', 'success');
                     renderAppUi();
                 } else {
-                    showToast('PIN Master Administrator Salah!', 'danger');
+                    showToast('PIN Master Super Admin Salah!', 'danger');
+                }
+            } else if (role === 'PANITIA') {
+                const pin = document.getElementById('mainPinPanitia').value.trim();
+                if (pin === APP_CONFIG.pinPanitia) {
+                    saveSession('PANITIA');
+                    showToast('Login Panitia Berhasil!', 'success');
+                    renderAppUi();
+                } else {
+                    showToast('PIN Panitia Salah!', 'danger');
                 }
             } else if (role === 'JURI') {
                 const idLomba = document.getElementById('mainSelectLomba').value;
-                const pin = document.getElementById('mainPinJuri').value.trim();
+                const pinInput = document.getElementById('mainPinJuri').value.trim();
                 const lomba = LOMBA_LIST.find(l => l.id === idLomba);
 
-                if (lomba && pin === lomba.pin) {
-                    saveSession('JURI', idLomba, lomba.juri);
-                    showToast(`Login Penilai ${lomba.nama} Berhasil!`, 'success');
+                if (!lomba) {
+                    showToast('Cabang Lomba tidak ditemukan!', 'danger');
+                    return;
+                }
+
+                // EKSPLORASI DYNAMIC PIN MATRIX ({PIN}-J1, {PIN}-J2, dst)
+                let matchedJuriIndex = null;
+                const totalJuri = Number(lomba.jumlahJuri || 3);
+                const basePin = lomba.pinBase || lomba.pin || '1234';
+
+                for (let i = 1; i <= totalJuri; i++) {
+                    const expectedPin = `${basePin}-J${i}`;
+                    if (pinInput === expectedPin || pinInput === basePin) {
+                        matchedJuriIndex = i;
+                        break;
+                    }
+                }
+
+                if (matchedJuriIndex !== null) {
+                    saveSession('JURI', idLomba, matchedJuriIndex, `Juri ${matchedJuriIndex}`);
+                    showToast(`Login Juri Ke-${matchedJuriIndex} ${lomba.nama} Berhasil!`, 'success');
                     renderAppUi();
                 } else {
-                    showToast('PIN Juri untuk cabang lomba ini salah!', 'danger');
+                    showToast(`PIN Juri Salah! Format wajib: ${basePin}-J1 s/d ${basePin}-J${totalJuri}`, 'danger');
                 }
             }
         }
 
-        // AUTH GUARD & ROLE-BASED UI MANAGEMENT
         function renderAppUi() {
             document.getElementById('subEventStatus').innerText = `SMARTSPASA KE-${APP_CONFIG.edisi}`;
             document.getElementById('bannerTitleUmum').innerText = `SMARTSPASA KE-${APP_CONFIG.edisi} ASSESSMENT`;
             document.getElementById('adminEdisi').value = APP_CONFIG.edisi;
             document.getElementById('adminKetua').value = APP_CONFIG.ketua;
             document.getElementById('adminNipKetua').value = APP_CONFIG.nipKetua;
+            document.getElementById('adminPin').value = APP_CONFIG.pinAdmin;
+            document.getElementById('adminPinPanitia').value = APP_CONFIG.pinPanitia || '888999';
+            document.getElementById('adminModeRanking').value = APP_CONFIG.modeRanking || 'STRICT';
 
             const btnLogout = document.getElementById('btnLogout');
             const navTabs = document.getElementById('navTabs');
@@ -766,23 +837,30 @@
                 tabAdmin.classList.remove('hidden');
                 btnLogout.classList.remove('hidden');
                 badgeRole.classList.remove('hidden');
-                labelRole.innerText = 'Administrator';
+                labelRole.innerText = 'Super Admin';
+                switchTab('admin');
+            } else if (currentRole === 'PANITIA') {
+                navTabs.classList.remove('hidden');
+                tabLogin.classList.remove('hidden');
+                tabUmum.classList.remove('hidden');
+                tabJuri.classList.add('hidden');
+                tabAdmin.classList.remove('hidden'); // Panitia bisa akses impor & kelola peserta
+                btnLogout.classList.remove('hidden');
+                badgeRole.classList.remove('hidden');
+                labelRole.innerText = 'Panitia (Organizer)';
                 switchTab('admin');
             } else if (currentRole === 'JURI') {
                 navTabs.classList.remove('hidden');
-                tabLogin.classList.add('hidden'); // HILANGKAN PORTAL AKSES UTAMA SAAT AKSES JURI
+                tabLogin.classList.add('hidden');
                 tabUmum.classList.remove('hidden');
                 tabJuri.classList.remove('hidden');
                 tabAdmin.classList.add('hidden');
                 btnLogout.classList.remove('hidden');
                 badgeRole.classList.remove('hidden');
-                labelRole.innerText = 'Penilai Lomba / Juri';
+                labelRole.innerText = `Juri Ke-${currentActiveJuriIndex}`;
                 switchTab('juri');
             } else if (currentRole === 'UMUM') {
-                navTabs.classList.add('hidden'); // HILANGKAN SEMUA TAB UNTUK UMUM
-                tabLogin.classList.add('hidden');
-                tabJuri.classList.add('hidden');
-                tabAdmin.classList.add('hidden');
+                navTabs.classList.add('hidden');
                 btnLogout.classList.remove('hidden');
                 badgeRole.classList.remove('hidden');
                 labelRole.innerText = 'Publik / Umum';
@@ -801,8 +879,8 @@
         }
 
         function switchTab(tab) {
-            if (tab === 'admin' && currentRole !== 'ADMIN') return;
-            if (tab === 'juri' && currentRole !== 'JURI' && currentRole !== 'ADMIN') return;
+            if (tab === 'admin' && (currentRole !== 'ADMIN' && currentRole !== 'PANITIA')) return;
+            if (tab === 'juri' && (currentRole !== 'JURI' && currentRole !== 'ADMIN')) return;
 
             const pageHero = document.getElementById('pageLoginHero');
             const pageUmum = document.getElementById('pageUmum');
@@ -832,7 +910,7 @@
             } else if (tab === 'juri') {
                 pageJuri.classList.remove('hidden');
                 if(tabBtnJuri) tabBtnJuri.className = 'px-4 py-2 text-xs font-bold text-blue-600 border-b-2 border-blue-600 whitespace-nowrap';
-            } else if (tab === 'admin' && currentRole === 'ADMIN') {
+            } else if (tab === 'admin') {
                 pageAdmin.classList.remove('hidden');
                 if(tabBtnAdmin) tabBtnAdmin.className = 'px-4 py-2 text-xs font-bold text-blue-600 border-b-2 border-blue-600 whitespace-nowrap';
             }
@@ -844,7 +922,7 @@
             const cetakSel = document.getElementById('selectLombaCetakAdmin');
 
             if (mainSel) {
-                mainSel.innerHTML = LOMBA_LIST.map(l => `<option value="${l.id}">${l.nama}</option>`).join('');
+                mainSel.innerHTML = LOMBA_LIST.map(l => `<option value="${l.id}">${l.nama} (${l.jumlahJuri || 3} Juri)</option>`).join('');
             }
             if (umuSel) {
                 umuSel.innerHTML = `<option value="ALL">Semua Cabang Lomba</option>` + 
@@ -862,7 +940,7 @@
             }, 300);
         }
 
-        // PAGINASI & REKAP RATA-RATA MULTI-JURI (MEAN)
+        // PERHITUNGAN N-JURI DINAMIS & MODE RANKING STRICT vs LIVE
         function renderTabelUmum(page = 1) {
             currentPageUmum = page;
             const filter = document.getElementById('selectFilterLombaUmum').value;
@@ -876,7 +954,7 @@
             if (query) list = list.filter(p => p.no.toLowerCase().includes(query) || p.nama.toLowerCase().includes(query));
 
             if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 font-medium">Data peserta tidak ditemukan.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 font-medium">Belum ada data peserta.</td></tr>`;
                 document.getElementById('pageInfoUmum').innerText = `Halaman 0 dari 0`;
                 return;
             }
@@ -889,22 +967,33 @@
 
             paginatedData.forEach(p => {
                 const lomba = LOMBA_LIST.find(l => l.id === p.idLomba);
-                const isDitetapkan = lomba ? lomba.ditetapkan : false;
+                const totalTargetJuri = Number(lomba ? (lomba.jumlahJuri || 3) : 3);
 
                 const nil = NILAI_LIST.filter(n => n.no === p.no && n.idLomba === p.idLomba);
+                const countJuriDinilai = nil.length;
+
                 let scoreText = 'Belum Dinilai';
-                let rankBadge = '<span class="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Proses Penilaian</span>';
+                let statusBadge = '<span class="bg-slate-100 text-slate-600 text-[10px] px-2.5 py-0.5 rounded-full font-semibold">Belum Dinilai</span>';
 
-                if (nil.length > 0) {
-                    const totalScoreSum = nil.reduce((acc, curr) => acc + curr.nilaiAkhir, 0);
-                    const meanScore = totalScoreSum / nil.length;
+                if (countJuriDinilai > 0) {
+                    const totalScoreSum = nil.reduce((acc, curr) => acc + Number(curr.nilaiAkhir || 0), 0);
+                    const meanScore = (totalScoreSum / countJuriDinilai).toFixed(1);
 
-                    if (isDitetapkan) {
-                        scoreText = meanScore.toFixed(1);
-                        rankBadge = `<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Sah (${nil.length} Juri)</span>`;
+                    const isComplete = (countJuriDinilai >= totalTargetJuri);
+                    const isStrict = (APP_CONFIG.modeRanking === 'STRICT');
+
+                    if (isStrict) {
+                        if (isComplete) {
+                            scoreText = meanScore;
+                            statusBadge = `<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Lengkap (${countJuriDinilai}/${totalTargetJuri} Juri)</span>`;
+                        } else {
+                            scoreText = '***';
+                            statusBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Berlangsung (${countJuriDinilai}/${totalTargetJuri} Juri)</span>`;
+                        }
                     } else {
-                        scoreText = '***';
-                        rankBadge = `<span class="bg-slate-100 text-slate-600 text-[10px] px-2.5 py-0.5 rounded-full font-semibold">Draft Rekap Juri</span>`;
+                        // LIVE AVERAGE MODE
+                        scoreText = meanScore;
+                        statusBadge = `<span class="bg-blue-100 text-blue-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Rata-Rata Sementara (${countJuriDinilai}/${totalTargetJuri} Juri)</span>`;
                     }
                 }
 
@@ -913,9 +1002,9 @@
                         <td class="p-2.5 font-bold text-slate-700">${p.no}</td>
                         <td class="p-2.5 font-semibold text-slate-900">${p.nama}</td>
                         <td class="p-2.5 text-slate-600">${p.sekolah}</td>
-                        <td class="p-2.5 text-slate-600">${p.namaLomba || ''}</td>
+                        <td class="p-2.5 text-slate-600">${p.namaLomba || (lomba ? lomba.nama : '')}</td>
                         <td class="p-2.5 text-center font-bold text-blue-600 text-sm">${scoreText}</td>
-                        <td class="p-2.5 text-center">${rankBadge}</td>
+                        <td class="p-2.5 text-center">${statusBadge}</td>
                     </tr>
                 `;
             });
@@ -929,19 +1018,21 @@
             renderTabelUmum(currentPageUmum + dir);
         }
 
-        // PENILAIAN JURI & INDIKATOR SINKRON
+        // LEMBAR PENILAIAN JURI & INDIKATOR DINAMIS
         function renderPenilaianJuri() {
             const lomba = LOMBA_LIST.find(l => l.id === currentActiveLombaId);
             if (!lomba) return;
 
             document.getElementById('juriLombaActiveName').value = lomba.nama;
-            document.getElementById('inputNamaJuriActive').value = currentActiveJuriName || lomba.juri || '';
+            document.getElementById('juriIndexActive').value = `Juri ${currentActiveJuriIndex}`;
+            document.getElementById('juriTotalCountActive').value = `${lomba.jumlahJuri || 3} Juri`;
+            document.getElementById('inputNamaJuriActive').value = currentActiveJuriName || `Juri ${currentActiveJuriIndex}`;
 
             const containerIndikator = document.getElementById('containerIndikator');
             containerIndikator.innerHTML = '';
             let totalBobot = 0;
 
-            const indikatorArr = lomba.indikator || [];
+            const indikatorArr = lomba.indikator || [{nama: 'Kriteria Utama', bobot: 100}];
             indikatorArr.forEach((ind) => {
                 totalBobot += Number(ind.bobot);
                 containerIndikator.innerHTML += `
@@ -960,14 +1051,13 @@
 
             const listPeserta = PESERTA_LIST.filter(p => p.idLomba === currentActiveLombaId);
             if (listPeserta.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-medium">Belum ada peserta terdaftar untuk cabang ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-medium">Belum ada peserta terdaftar. Tambahkan via Excel / OTS.</td></tr>`;
                 return;
             }
 
-            const currentJuriNama = document.getElementById('inputNamaJuriActive').value || 'Juri Penilai';
-
             listPeserta.forEach(p => {
-                const existingNilai = NILAI_LIST.find(n => n.no === p.no && n.idLomba === currentActiveLombaId && n.juriNama === currentJuriNama) || { rincian: {}, nilaiAkhir: 0, catatan: '' };
+                // NILAI TERPISAH PER NO REG DAN JURI INDEX
+                const existingNilai = NILAI_LIST.find(n => n.no === p.no && n.idLomba === currentActiveLombaId && Number(n.juriIndex) === Number(currentActiveJuriIndex)) || { rincian: {}, nilaiAkhir: 0, catatan: '' };
 
                 let inputIndikatorHTML = '<div class="space-y-1">';
                 indikatorArr.forEach(ind => {
@@ -1042,14 +1132,14 @@
                 lomba.indikator = newIndikator;
                 const res = await postToGAS('saveIndikator', { idLomba: currentActiveLombaId, indikator: newIndikator });
                 if (res.status === 'success') {
-                    showToast('Struktur Indikator Lomba Berhasil Disimpan ke Google Sheets!', 'success');
+                    showToast('Struktur Indikator Lomba Tersimpan di Google Sheets!', 'success');
                     renderPenilaianJuri();
                 }
             }
         }
 
         async function simpanNilaiPesertaSingle(noReg) {
-            const currentJuriNama = document.getElementById('inputNamaJuriActive').value.trim() || 'Juri Penilai';
+            const juriNamaInput = document.getElementById('inputNamaJuriActive').value.trim() || `Juri ${currentActiveJuriIndex}`;
             const inputs = document.querySelectorAll(`input[data-peserta="${noReg}"]`);
             let totalNilai = 0;
             let rincian = {};
@@ -1064,17 +1154,17 @@
             });
 
             const catatan = document.getElementById(`catatan_${noReg}`).value.trim();
-            const idx = NILAI_LIST.findIndex(n => n.no === noReg && n.idLomba === currentActiveLombaId && n.juriNama === currentJuriNama);
-
             const payload = {
                 no: noReg,
                 idLomba: currentActiveLombaId,
-                juriNama: currentJuriNama,
+                juriIndex: currentActiveJuriIndex,
+                juriNama: juriNamaInput,
                 rincian: rincian,
                 nilaiAkhir: Number(totalNilai.toFixed(1)),
                 catatan: catatan
             };
 
+            const idx = NILAI_LIST.findIndex(n => n.no === noReg && n.idLomba === currentActiveLombaId && Number(n.juriIndex) === Number(currentActiveJuriIndex));
             if (idx >= 0) {
                 NILAI_LIST[idx] = payload;
             } else {
@@ -1085,7 +1175,7 @@
 
             const res = await postToGAS('saveScore', payload);
             if (res.status === 'success') {
-                showToast(`Nilai ${noReg} tersimpan di Server! (Nilai Juri: ${totalNilai.toFixed(1)})`, 'success');
+                showToast(`Nilai Juri Ke-${currentActiveJuriIndex} (${noReg}) Tersimpan!`, 'success');
                 renderTabelUmum(1);
             }
         }
@@ -1123,28 +1213,31 @@
 
             const res = await postToGAS('addPeserta', newPeserta);
             if (res.status === 'success') {
-                showToast(`Peserta OTS ${nama} berhasil disimpan ke database!`, 'success');
+                showToast(`Peserta OTS ${nama} berhasil disimpan ke Google Sheets!`, 'success');
                 closeModalTambahPeserta();
                 renderPenilaianJuri();
                 renderTabelUmum(1);
             }
         }
 
-        // PENGATURAN ADMIN & OTORISASI
+        // PENGATURAN SUPER ADMIN & OTORISASI LOMBA
         function renderTabelAdminLomba() {
             const tbody = document.getElementById('tabelAdminLomba');
             tbody.innerHTML = '';
 
             LOMBA_LIST.forEach(l => {
                 const statusBadge = l.ditetapkan 
-                    ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Sah / Resmi Ditetapkan</span>`
+                    ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Sah / Dipublikasikan</span>`
                     : `<span class="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Draft / Belum Final</span>`;
+
+                const basePin = l.pinBase || l.pin || '1234';
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition">
                         <td class="p-2.5 font-bold text-slate-700">${l.id}</td>
                         <td class="p-2.5 font-semibold text-slate-900">${l.nama}</td>
-                        <td class="p-2.5 font-mono text-xs font-bold text-blue-600">${l.pin}</td>
+                        <td class="p-2.5 text-center font-bold text-blue-700 bg-blue-50/50">${l.jumlahJuri || 3} Juri</td>
+                        <td class="p-2.5 font-mono text-xs font-bold text-slate-700">${basePin}-J[1..N]</td>
                         <td class="p-2.5">${statusBadge}</td>
                         <td class="p-2.5 text-center">
                             <button onclick="togglePenetapanLomba('${l.id}')" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1 rounded text-[10px] font-bold transition">
@@ -1181,10 +1274,11 @@
 
         async function simpanLombaBaruAdmin() {
             const nama = document.getElementById('adminNewNamaLomba').value.trim();
-            const pin = document.getElementById('adminNewPinJuri').value.trim();
+            const jumlahJuri = parseInt(document.getElementById('adminNewJumlahJuri').value) || 3;
+            const pinBase = document.getElementById('adminNewPinJuri').value.trim();
 
-            if (!nama || !pin) {
-                showToast('Nama Lomba dan PIN wajib diisi!', 'danger');
+            if (!nama || !pinBase) {
+                showToast('Nama Lomba dan Base PIN wajib diisi!', 'danger');
                 return;
             }
 
@@ -1192,8 +1286,8 @@
             const newLombaObj = {
                 id: newId,
                 nama: nama,
-                pin: pin,
-                juri: `Tim Juri ${nama}`,
+                jumlahJuri: jumlahJuri,
+                pinBase: pinBase,
                 ditetapkan: false,
                 indikator: [{nama: 'Kriteria Utama', bobot: 100}]
             };
@@ -1202,7 +1296,7 @@
 
             const res = await postToGAS('addLomba', newLombaObj);
             if (res.status === 'success') {
-                showToast(`Cabang Lomba ${nama} tersimpan di Google Sheets!`, 'success');
+                showToast(`Cabang Lomba ${nama} (${jumlahJuri} Juri) tersimpan!`, 'success');
                 closeModalTambahLomba();
                 populateDropdowns();
                 renderTabelAdminLomba();
@@ -1214,15 +1308,17 @@
             APP_CONFIG.ketua = document.getElementById('adminKetua').value.trim();
             APP_CONFIG.nipKetua = document.getElementById('adminNipKetua').value.trim();
             APP_CONFIG.pinAdmin = document.getElementById('adminPin').value.trim();
+            APP_CONFIG.pinPanitia = document.getElementById('adminPinPanitia').value.trim();
+            APP_CONFIG.modeRanking = document.getElementById('adminModeRanking').value;
 
             const res = await postToGAS('saveConfig', APP_CONFIG);
             if (res.status === 'success') {
-                showToast('Identitas Event Berhasil Disimpan ke Google Sheets!', 'success');
+                showToast('Identitas & Pengaturan Mode Ranking Tersimpan!', 'success');
                 renderAppUi();
             }
         }
 
-        // KOMPRESI GAMBAR KLIEN (CANVAS HTML5 MAX 800PX, JPEG 0.7)
+        // KOMPRESI GAMBAR KLIEN (HTML5 CANVAS MAX 800PX, JPEG 0.7)
         function previewCompressImage(input, type) {
             const file = input.files[0];
             if (!file) return;
@@ -1264,7 +1360,7 @@
 
                     const res = await postToGAS('saveConfigMedia', { type: type, base64: compressedBase64 });
                     if (res.status === 'success') {
-                        showToast(`Media ${type} dikompresi & tersimpan di sel database!`, 'success');
+                        showToast(`Gambar ${type} dikompresi & tersimpan di sel database!`, 'success');
                     }
                 };
                 img.src = e.target.result;
@@ -1272,7 +1368,7 @@
             reader.readAsDataURL(file);
         }
 
-        // EXCEL TEMPLATE & BATCH IMPOR CLIENT-SIDE
+        // EXCEL IMPOR & TEMPLATE CLIENT-SIDE
         function downloadExcelTemplate() {
             const data = [
                 { "Nomor Pendaftaran": "SMP-2026-001", "Nama Lengkap": "Ahmad Rizky", "Asal Sekolah": "SMPN 1 Bondowoso", "Jenis Lomba": "Lomba Baca Puisi" }
@@ -1321,14 +1417,14 @@
 
                 const res = await postToGAS('importBatchPeserta', batchPeserta);
                 if (res.status === 'success') {
-                    showToast(`Impor Berhasil! ${batchPeserta.length} data peserta tersimpan di server database!`, 'success');
+                    showToast(`Impor Berhasil! ${batchPeserta.length} peserta tersimpan di Google Sheets!`, 'success');
                     renderAppUi();
                 }
             };
             reader.readAsArrayBuffer(file);
         }
 
-        // GENERATOR DOKUMEN PDF INSTAN (JSPDF & AUTOTABLE)
+        // GENERATOR DOKUMEN PDF INSTAN (jsPDF & AutoTable)
         function generatePDFLaporan(tipeDoc) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
@@ -1342,7 +1438,7 @@
 
             let yPos = 15;
 
-            // Render Kop Surat (Base64 Canvas / Text Fallback)
+            // Render Kop Surat
             if (APP_CONFIG.kopBase64) {
                 doc.addImage(APP_CONFIG.kopBase64, 'JPEG', 15, yPos, 180, 25);
                 yPos += 30;
@@ -1366,15 +1462,15 @@
                 yPos += 6;
                 doc.setFontSize(10);
                 doc.setFont("helvetica", "normal");
-                doc.text(`Cabang Lomba: ${lomba.nama}`, 105, yPos, { align: "center" });
+                doc.text(`Cabang Lomba: ${lomba.nama} (${lomba.jumlahJuri || 3} Juri)`, 105, yPos, { align: "center" });
                 yPos += 10;
 
-                const headers = [["Peringkat", "No Reg", "Nama Peserta", "Asal Sekolah", "Nilai Akhir (Mean)"]];
+                const headers = [["Peringkat", "No Reg", "Nama Peserta", "Asal Sekolah", "Nilai Rata-Rata"]];
                 const listPeserta = PESERTA_LIST.filter(p => p.idLomba === idLombaCetak);
                 
                 const rows = listPeserta.map(p => {
                     const nil = NILAI_LIST.filter(n => n.no === p.no && n.idLomba === idLombaCetak);
-                    const avg = nil.length > 0 ? (nil.reduce((a, b) => a + b.nilaiAkhir, 0) / nil.length).toFixed(1) : '0';
+                    const avg = nil.length > 0 ? (nil.reduce((a, b) => a + Number(b.nilaiAkhir || 0), 0) / nil.length).toFixed(1) : '0';
                     return [ "", p.no, p.nama, p.sekolah, avg ];
                 }).sort((a, b) => Number(b[4]) - Number(a[4]));
 
@@ -1396,7 +1492,7 @@
                 doc.setFontSize(10);
                 doc.setFont("helvetica", "normal");
 
-                const textBody = `Pada hari ini, Panitia Penyelenggara SMARTSPASA KE-${APP_CONFIG.edisi} UPTD SPF SMP Negeri 1 Bondowoso beserta Tim Penilai/Juri telah melaksanakan rapat penetapan hasil nilai peserta untuk cabang lomba: ${lomba.nama}. Berdasarkan hasil rekapitulasi penilaian murni, ditetapkan keputusan pemenang resmi secara sah.`;
+                const textBody = `Pada hari ini, Panitia Penyelenggara SMARTSPASA KE-${APP_CONFIG.edisi} UPTD SPF SMP Negeri 1 Bondowoso beserta Tim Penilai/Juri (${lomba.jumlahJuri || 3} Juri) telah melaksanakan penetapan hasil akhir untuk cabang lomba: ${lomba.nama}. Keputusan ini bersifat final dan tidak dapat diganggu gugat.`;
 
                 const splitText = doc.splitTextToSize(textBody, 170);
                 doc.text(splitText, 20, yPos);
@@ -1409,11 +1505,11 @@
                 const listPeserta = PESERTA_LIST.filter(p => p.idLomba === idLombaCetak);
                 const rows = listPeserta.map(p => {
                     const nil = NILAI_LIST.filter(n => n.no === p.no && n.idLomba === idLombaCetak);
-                    const avg = nil.length > 0 ? (nil.reduce((a, b) => a + b.nilaiAkhir, 0) / nil.length).toFixed(1) : '0';
+                    const avg = nil.length > 0 ? (nil.reduce((a, b) => a + Number(b.nilaiAkhir || 0), 0) / nil.length).toFixed(1) : '0';
                     return [ p.no, p.nama, p.sekolah, avg ];
                 }).sort((a, b) => Number(b[3]) - Number(a[3])).slice(0, 3);
 
-                const headers = [["No Reg", "Nama Pemenang", "Asal Sekolah", "Nilai Akhir (Mean)"]];
+                const headers = [["No Reg", "Nama Pemenang", "Asal Sekolah", "Nilai Rata-Rata"]];
                 doc.autoTable({
                     startY: yPos,
                     head: headers,
@@ -1434,7 +1530,7 @@
                 const listPeserta = PESERTA_LIST.filter(p => p.idLomba === idLombaCetak);
                 const scores = listPeserta.map(p => {
                     const nil = NILAI_LIST.filter(n => n.no === p.no && n.idLomba === idLombaCetak);
-                    return nil.length > 0 ? (nil.reduce((a, b) => a + b.nilaiAkhir, 0) / nil.length) : 0;
+                    return nil.length > 0 ? (nil.reduce((a, b) => a + Number(b.nilaiAkhir || 0), 0) / nil.length) : 0;
                 });
 
                 const totalPeserta = listPeserta.length;
@@ -1444,6 +1540,7 @@
 
                 const rowsAnalisis = [
                     ["Total Peserta Terdaftar", `${totalPeserta} Siswa`],
+                    ["Jumlah Juri Ditugaskan", `${lomba.jumlahJuri || 3} Juri`],
                     ["Nilai Rata-Rata Tertinggi (Max)", maxScore],
                     ["Nilai Rata-Rata Terendah (Min)", minScore],
                     ["Rata-Rata Keseluruhan Cabang", avgScore]
@@ -1464,7 +1561,7 @@
                 finalY = 30;
             }
 
-            // Area Tanda Tangan Resmi
+            // Tanda Tangan Resmi
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
             doc.text("Ketua Pelaksana Lomba,", 30, finalY);
@@ -1474,7 +1571,7 @@
 
             doc.setFont("helvetica", "bold");
             doc.text(APP_CONFIG.ketua, 30, finalY);
-            doc.text(lomba.juri || "Tim Juri Penilai", 130, finalY);
+            doc.text(`Tim Juri (${lomba.jumlahJuri || 3} Juri)`, 130, finalY);
 
             finalY += 5;
             doc.setFont("helvetica", "normal");
