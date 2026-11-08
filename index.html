@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SMARTSPASA</title>
   
+  <!-- Dynamic Favicon Link -->
+  <link id="dynamic-favicon" rel="icon" type="image/png" href="">
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -212,7 +215,7 @@
         </div>
 
         <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <button onclick="exportBeritaAcaraPDF()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg shadow-indigo-600/20">
+          <button id="btn-export-pdf" onclick="exportBeritaAcaraPDF()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg shadow-indigo-600/20">
             <i class="fas fa-file-pdf"></i> Ekspor PDF Berita Acara
           </button>
         </div>
@@ -458,7 +461,7 @@
           <div class="space-y-4">
             <div>
               <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Jumlah Juri Bertugas</label>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-3">
                 <input type="number" id="cfg-judge-count" min="1" max="15" value="2" class="w-24 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-center font-bold text-white text-base">
                 <button onclick="applyDynamicJudgeCount()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-lg shadow-amber-600/20">
                   Update Jumlah Juri
@@ -535,7 +538,7 @@
           </div>
 
           <div class="flex flex-col sm:flex-row items-center gap-3">
-            <input type="text" id="new-kat-name" placeholder="Nama Jenis Lomba Baru (misal: Jenis Lomba ---)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-medium focus:outline-none focus:border-indigo-500">
+            <input type="text" id="new-kat-name" placeholder="Nama Jenis Lomba Baru (misal: SMA/SMK / SMP/MTs / SD/MI)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-medium focus:outline-none focus:border-indigo-500">
             <button onclick="addNewKategori()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/20 shrink-0 flex items-center justify-center gap-2">
               <i class="fas fa-plus-circle"></i> Tambah Jenis Lomba
             </button>
@@ -559,7 +562,6 @@
     <p>&copy; ariefcaturk ; &reg; UPTD SPF SMP Negeri 1 Bondowoso ; &reg; SMARTSPASA</p>
   </footer>
 
-  <!-- APP ENGINE & SPA LOGIC -->
   <script>
     // Global Databases & Variables
     let databasePeserta = [];
@@ -582,11 +584,10 @@
       pinAdmin: "9999",
       pinPanitia: "1234",
       pinJuriDefault: "1111",
-      categories: ["SD/MI"],
+      categories: ["Lomba 1", "Lomba 2", "Lomba ...."],
       judges: [
-        { id: "JURI1", name: "Juri 1 - Utama", pin: "1111", jenisLomba: "ALL", criteria: ["Dasar 1 (0-100)", "Madya 1 (0-100)", "Utama 1 (0-100)"] },
-        { id: "JURI2", name: "Juri 2 - Madya", pin: "2222", jenisLomba: "ALL", criteria: ["Dasar 2 (0-100)", "Madya 2 (0-100)", "Utama 2 (0-100)"] },
-        { id: "JURI3", name: "Juri 3 - Utama", pin: "3333", jenisLomba: "ALL", criteria: ["Dasar 3 (0-100)", "Madya 3 (0-100)", "Utama 3 (0-100)"] }
+        { id: "JURI1", name: "Juri 1 - Dasar", pin: "1111", jenisLomba: "ALL", criteria: ["Dasar 1 (0-100)", "Dasar 2 (0-100)", "Dasar 3 (0-100)"] },
+        { id: "JURI2", name: "Juri 2 - Madya", pin: "2222", jenisLomba: "ALL", criteria: ["Madya 1 (0-100)", "Madya 2 (0-100)", "Madya 3 (0-100)"] },
       ]
     };
 
@@ -854,12 +855,14 @@
       const tabPlotting = document.getElementById('tab-btn-plotting');
       const tabPeserta = document.getElementById('tab-btn-peserta');
       const tabConfig = document.getElementById('tab-btn-config');
+      const btnExportPdf = document.getElementById('btn-export-pdf');
 
       if (currentUserRole === 'PUBLIC') {
         if (tabJuri) tabJuri.classList.add('hidden');
         if (tabPlotting) tabPlotting.classList.add('hidden');
         if (tabPeserta) tabPeserta.classList.add('hidden');
         if (tabConfig) tabConfig.classList.add('hidden');
+        if (btnExportPdf) btnExportPdf.classList.add('hidden');
         document.getElementById('public-lookup-view')?.classList.remove('hidden');
         document.getElementById('admin-leaderboard-view')?.classList.add('hidden');
       } else {
@@ -867,6 +870,7 @@
         if (tabPlotting) tabPlotting.classList.remove('hidden');
         if (tabPeserta) tabPeserta.classList.remove('hidden');
         if (tabConfig) tabConfig.classList.remove('hidden');
+        if (btnExportPdf) btnExportPdf.classList.remove('hidden');
         document.getElementById('public-lookup-view')?.classList.add('hidden');
         document.getElementById('admin-leaderboard-view')?.classList.remove('hidden');
       }
@@ -875,28 +879,91 @@
     function updateActiveJudgeDisplay() {
       const sel = document.getElementById('select-active-juri');
       if (!sel) return;
-      sel.innerHTML = appConfig.judges.map(j => `<option value="${j.id}" ${j.id === currentJudgeId ? 'selected' : ''}>${j.name} (${j.jenisLomba})</option>`).join('');
-      if (!currentUserRole.startsWith('JURI') && currentUserRole !== 'PUBLIC') {
-        sel.disabled = false;
-      } else if (currentUserRole.startsWith('JURI')) {
-        currentJudgeId = currentUserRole;
-        sel.value = currentJudgeId;
-        sel.disabled = true;
+
+      if (appConfig.judges.length === 0) {
+        sel.innerHTML = `<option value="">-- Tidak ada juri terkonfigurasi --</option>`;
+        return;
       }
+
+      const exists = appConfig.judges.some(j => j.id === currentJudgeId);
+      if (!exists) {
+        currentJudgeId = appConfig.judges[0].id;
+      }
+
+      sel.innerHTML = appConfig.judges.map(j => {
+        const isSel = j.id === currentJudgeId ? 'selected' : '';
+        return `<option value="${j.id}" ${isSel}>${j.name} (${j.jenisLomba})</option>`;
+      }).join('');
+
+      if (currentUserRole.startsWith('JURI')) {
+        sel.value = currentUserRole;
+        currentJudgeId = currentUserRole;
+        sel.disabled = true;
+      } else {
+        sel.disabled = false;
+      }
+
+      populateJuriPesertaDropdown();
     }
 
-    function onActiveJudgeSelectChange(val) {
-      currentJudgeId = val;
+    function onActiveJudgeSelectChange(juriId) {
+      if (!juriId) return;
+      currentJudgeId = juriId;
       populateJuriPesertaDropdown();
+      saveAppState();
+    }
+
+    function applyDynamicJudgeCount() {
+      const input = document.getElementById('cfg-judge-count');
+      if (!input) return;
+      const targetCount = parseInt(input.value) || 3;
+      if (targetCount < 1) return;
+
+      while (appConfig.judges.length < targetCount) {
+        const nextNum = appConfig.judges.length + 1;
+        appConfig.judges.push({
+          id: 'JURI' + nextNum,
+          name: `Juri ${nextNum} - Penilai`,
+          pin: String(1111 * nextNum).slice(0, 4) || '1111',
+          jenisLomba: 'ALL',
+          criteria: ["PBB & Formasi (0-100)", "Kerapihan (0-100)", "Kreativitas (0-100)"]
+        });
+      }
+
+      while (appConfig.judges.length > targetCount) {
+        const popped = appConfig.judges.pop();
+        if (popped) {
+          databaseNilai = databaseNilai.filter(n => n.juriId !== popped.id);
+        }
+      }
+
+      saveAppState();
+      renderDynamicJuriConfigList();
+      updateActiveJudgeDisplay();
+      showToast(`Jumlah juri berhasil diubah menjadi ${targetCount}!`, 'success');
+      syncToGAS('saveConfig', { config: appConfig });
+    }
+
+    function applyRankingVisibility() {
+      const sel = document.getElementById('cfg-ranking-visibility');
+      if (!sel) return;
+      appConfig.rankingVisibility = sel.value;
+      saveAppState();
+      renderLeaderboard();
+      showToast('Mode tampilan ranking diperbarui!', 'info');
+      syncToGAS('saveConfig', { config: appConfig });
     }
 
     function renderLogoAndKopDisplay() {
       const logoBox = document.getElementById('app-logo-box');
+      const favicon = document.getElementById('dynamic-favicon');
       if (logoBox) {
         if (compressedLogoData) {
           logoBox.innerHTML = `<img src="${compressedLogoData}" class="w-full h-full object-contain">`;
+          if (favicon) favicon.href = compressedLogoData;
         } else {
           logoBox.innerHTML = `<i class="fas fa-trophy text-slate-950 text-xl"></i>`;
+          if (favicon) favicon.href = '';
         }
       }
 
@@ -1326,11 +1393,11 @@
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 mb-1">Nama Lengkap / Nama Tim</label>
-              <input type="text" id="modal-peserta-nama" placeholder="Misal: Nama Peserta / Tim" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <input type="text" id="modal-peserta-nama" placeholder="Misal: Tim Garuda" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 mb-1">Asal Sekolah / Instansi</label>
-              <input type="text" id="modal-peserta-sekolah" placeholder="Misal: SD 1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <input type="text" id="modal-peserta-sekolah" placeholder="Misal: SMPN 1 Jember" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 mb-1">Jenis Lomba (Kategori)</label>
@@ -1514,7 +1581,7 @@
           <div class="space-y-3">
             <div>
               <label class="block text-xs font-bold text-slate-400 mb-1">Nama Juri / Penilai</label>
-              <input type="text" id="add-juri-name" placeholder="Misal: Juri 1 - Materi Penilaian" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <input type="text" id="add-juri-name" placeholder="Misal: Juri 4 - Formasi & Gerak" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 mb-1">Tugas Jenis Lomba / Kategori</label>
@@ -1651,7 +1718,8 @@
     function downloadExcelTemplate() {
       const wb = XLSX.utils.book_new();
       const sampleData = [
-        { NoPendaftaran: 'REG-001', NamaLengkap: 'Nama Peserta ', AsalSekolah: 'SD 1', JenisLomba: 'Pilih Jenis Lomba' },
+        { NoPendaftaran: 'REG-001', NamaLengkap: 'Tim Garuda Utama', AsalSekolah: 'SMPN 1 Jember', JenisLomba: 'SMP/MTs' },
+        { NoPendaftaran: 'REG-002', NamaLengkap: 'Tim Satria Perkasa', AsalSekolah: 'SMKN 2 Jember', JenisLomba: 'SMA/SMK' }
       ];
       const ws = XLSX.utils.json_to_sheet(sampleData);
       XLSX.utils.book_append_sheet(wb, ws, 'PESERTA');
@@ -1802,6 +1870,8 @@
 
       if (document.getElementById('cfg-event-title')) document.getElementById('cfg-event-title').value = appConfig.title || 'SMARTSPASA';
       if (document.getElementById('cfg-event-subtitle')) document.getElementById('cfg-event-subtitle').value = appConfig.subtitle || '';
+      if (document.getElementById('cfg-judge-count')) document.getElementById('cfg-judge-count').value = appConfig.judges.length;
+      if (document.getElementById('cfg-ranking-visibility')) document.getElementById('cfg-ranking-visibility').value = appConfig.rankingVisibility || 'LIVE';
       if (document.getElementById('cfg-pin-admin')) document.getElementById('cfg-pin-admin').value = appConfig.pinAdmin || '9999';
       if (document.getElementById('cfg-pin-panitia')) document.getElementById('cfg-pin-panitia').value = appConfig.pinPanitia || '1234';
       if (document.getElementById('cfg-pin-juri-default')) document.getElementById('cfg-pin-juri-default').value = appConfig.pinJuriDefault || '1111';
