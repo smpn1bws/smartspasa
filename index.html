@@ -1330,7 +1330,7 @@
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 mb-1">Asal Sekolah / Instansi</label>
-              <input type="text" id="modal-peserta-sekolah" placeholder="Misal: SMPN 1 Jember" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <input type="text" id="modal-peserta-sekolah" placeholder="Misal: SD 1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 mb-1">Jenis Lomba (Kategori)</label>
@@ -1651,8 +1651,7 @@
     function downloadExcelTemplate() {
       const wb = XLSX.utils.book_new();
       const sampleData = [
-        { NoPendaftaran: 'REG-001', NamaLengkap: 'Tim Garuda Utama', AsalSekolah: 'SMPN 1 Jember', JenisLomba: 'SMP/MTs' },
-        { NoPendaftaran: 'REG-002', NamaLengkap: 'Tim Satria Perkasa', AsalSekolah: 'SMKN 2 Jember', JenisLomba: 'SMA/SMK' }
+        { NoPendaftaran: 'REG-001', NamaLengkap: 'Nama Peserta ', AsalSekolah: 'SD 1', JenisLomba: 'Pilih Jenis Lomba' },
       ];
       const ws = XLSX.utils.json_to_sheet(sampleData);
       XLSX.utils.book_append_sheet(wb, ws, 'PESERTA');
