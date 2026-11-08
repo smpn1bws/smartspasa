@@ -1,1623 +1,1817 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMARTSPASA ASSESSMENT</title>
-    <!-- Favicon Inline SVG Data URI -->
-    <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1WW8IClnvrY9d5a16vhFRSeHcvUOIlEI2">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMARTSPASA</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            },
+            darkbg: '#0b0f17',
+            cardbg: '#111827',
+            cardborder: '#1f2937'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- jsPDF & AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <!-- SheetJS (XLSX) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0b0f17; color: #f3f4f6; transition: background-color 0.3s ease, color 0.3s ease; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0f17; }
+    ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #374151; }
     
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    .bento-card {
+      backdrop-filter: blur(12px);
+      border-radius: 1.25rem;
+      transition: all 0.2s ease-in-out;
+    }
+
+    html.dark .bento-card {
+      background-color: rgba(17, 24, 39, 0.75);
+      border: 1px solid rgba(31, 41, 55, 0.8);
+    }
     
-    <!-- jsPDF & AutoTable for Instant Client-Side PDF Generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    html:not(.dark) .bento-card {
+      background-color: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    }
 
-    <!-- SheetJS (XLSX) for Instant Client-Side Excel Export/Import -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    /* Light Mode Comprehensive UI Overrides */
+    html:not(.dark) body { background-color: #f8fafc; color: #0f172a; }
+    html:not(.dark) header { background-color: rgba(255, 255, 255, 0.9) !important; border-color: #e2e8f0 !important; }
+    html:not(.dark) nav { background-color: rgba(248, 250, 252, 0.85) !important; border-color: #e2e8f0 !important; }
+    html:not(.dark) #header-app-title { color: #0f172a !important; background: none !important; -webkit-text-fill-color: initial !important; }
+    html:not(.dark) #header-app-subtitle { color: #64748b !important; }
+    html:not(.dark) .bento-card h2, html:not(.dark) .bento-card h3, html:not(.dark) .bento-card h4 { color: #0f172a !important; }
+    html:not(.dark) table thead tr { background-color: #f1f5f9 !important; color: #334155 !important; border-color: #e2e8f0 !important; }
+    html:not(.dark) table tbody tr { border-color: #f1f5f9 !important; }
+    html:not(.dark) table tbody tr:hover { background-color: #f8fafc !important; }
+    html:not(.dark) input, html:not(.dark) select, html:not(.dark) textarea { background-color: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+    html:not(.dark) #modal-content { background-color: #ffffff !important; border-color: #e2e8f0 !important; color: #0f172a !important; }
+    html:not(.dark) footer { background-color: #ffffff !important; border-color: #e2e8f0 !important; color: #64748b !important; }
 
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-        }
-        .bento-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            transition: all 0.2s ease-in-out;
-        }
-        .bento-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-        }
-        /* Shimmer Loading Skeleton */
-        .skeleton {
-            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        #loadingOverlay { z-index: 9999; }
-        #toastContainer { z-index: 2000; }
-        .modal-overlay { z-index: 1000; }
-    </style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
-<body class="text-slate-800 flex flex-col min-h-screen">
+<body class="min-h-screen flex flex-col antialiased">
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex-col items-center justify-center text-white">
-        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-        <p id="loadingText" class="font-medium text-sm">Menghubungkan ke Server Database Google Sheets...</p>
+  <!-- Toast Notification System -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm"></div>
+
+  <!-- Dynamic Modal System -->
+  <div id="modal-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-40 hidden flex items-center justify-center p-4">
+    <div id="modal-content" class="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 rounded-lg transition"><i class="fas fa-times text-xl"></i></button>
+      <div id="modal-body"></div>
     </div>
+  </div>
 
-    <!-- Toast Notifications (Anti-Spam Throttled) -->
-    <div id="toastContainer" class="fixed top-5 right-5 flex flex-col gap-2 max-w-sm w-full"></div>
-
-    <!-- Smart UI Warning: GAS URL Placeholder Alert -->
-    <div id="gasWarningBanner" class="bg-amber-500 text-slate-900 text-xs px-4 py-2 font-bold flex items-center justify-between border-b border-amber-600 hidden">
-        <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-slate-900 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            <span>MODE PRODUKSI: Silakan masukkan Web App URL Google Apps Script pada variabel <code>GAS_WEB_APP_URL</code> di index.html.</span>
+  <!-- Main Header -->
+  <header class="sticky top-0 z-30 bg-slate-950/85 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      
+      <!-- Brand & Event Title -->
+      <div class="flex items-center gap-3">
+        <div id="app-logo-box" class="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-600 to-emerald-400 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-500/20 overflow-hidden shrink-0">
+          <i class="fas fa-trophy text-slate-950 text-xl"></i>
         </div>
-        <button onclick="document.getElementById('gasWarningBanner').remove()" class="text-slate-900 font-extrabold px-2">&times;</button>
-    </div>
+        <div>
+          <h1 id="header-app-title" class="font-extrabold text-sm md:text-base tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+            SMARTSPASA
+          </h1>
+          <p id="header-app-subtitle" class="text-xs text-slate-400 hidden sm:block">Sistem Rekapitulasi & Penjurian Terintegrasi</p>
+        </div>
+      </div>
 
-    <!-- Header Bar Korporat & Responsi -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div id="appLogoContainer" class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl overflow-hidden shadow-sm">
-                    <span id="appLogoText">SMARTSPASA</span>
-                    <img id="appLogoImg" src="" alt="Logo Sekolah" class="w-full h-full object-cover hidden">
-                </div>
-                <div>
-                    <h1 id="headerAppName" class="font-extrabold text-sm text-slate-900 tracking-tight leading-none">SMARTSPASA ASSESSMENT</h1>
-                    <p id="headerSubInstansi" class="text-[10px] text-slate-500 font-medium mt-0.5">UPTD SPF SMP Negeri 1 Bondowoso</p>
-                </div>
+      <!-- Current Role & Switcher Button -->
+      <div class="flex items-center gap-3">
+        <button onclick="toggleTheme()" id="btn-theme-toggle" class="bg-slate-800 hover:bg-slate-700 dark:bg-slate-800 text-slate-200 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-700/80 shadow-sm" title="Beralih Mode Gelap/Terang">
+          <i id="theme-toggle-icon" class="fas fa-moon text-amber-400"></i>
+          <span id="theme-toggle-text" class="hidden md:inline">Gelap</span>
+        </button>
+
+        <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl px-3 py-1.5">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+          <span class="text-xs font-medium text-slate-400 hidden md:inline">Peran:</span>
+          <span id="current-role-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 uppercase tracking-wider">PUBLIC VIEWER</span>
+        </div>
+        <button onclick="openRoleSwitchModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-indigo-600/25">
+          <i class="fas fa-user-shield"></i>
+          <span class="hidden sm:inline">Ganti Peran</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Banner Kop Surat Lomba -->
+  <div id="header-kop-banner" class="max-w-7xl mx-auto px-4 lg:px-8 pt-4 hidden">
+    <div class="w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex items-center justify-center max-h-36">
+      <img id="header-kop-img" src="" alt="Kop Surat Lomba" class="max-h-36 w-full object-contain">
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="bg-slate-900/60 border-b border-slate-800/80 px-4 lg:px-8 py-2 sticky top-[61px] z-20 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
+      <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="tab-btn active px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 bg-indigo-600 text-white transition">
+        <i class="fas fa-trophy text-amber-400"></i> Papan Skor & Rekap
+      </button>
+      <button onclick="switchTab('juri')" id="tab-btn-juri" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 transition">
+        <i class="fas fa-gavel"></i> Panel Penilaian Juri
+      </button>
+      <button onclick="switchTab('plotting')" id="tab-btn-plotting" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 transition">
+        <i class="fas fa-tasks"></i> Plotting & Progress Panitia
+      </button>
+      <button onclick="switchTab('peserta')" id="tab-btn-peserta" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 transition">
+        <i class="fas fa-users"></i> Kelola Peserta & Excel
+      </button>
+      <button onclick="switchTab('config')" id="tab-btn-config" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-400 hover:bg-slate-800 transition">
+        <i class="fas fa-sliders-h"></i> Pengaturan & Dynamic Juri
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Layout -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
+
+    <!-- SECTION 1: PAPAN SKOR & REKAP (Public & Admin) -->
+    <section id="sec-leaderboard" class="space-y-6">
+      
+      <!-- Bento Grid Overview Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bento-card p-4 flex flex-col justify-between">
+          <span class="text-xs font-medium text-slate-400">Total Peserta Terdaftar</span>
+          <div class="flex items-baseline justify-between mt-2">
+            <span id="stat-total-peserta" class="text-2xl font-black text-white">0</span>
+            <i class="fas fa-users text-indigo-400 text-lg"></i>
+          </div>
+        </div>
+        <div class="bento-card p-4 flex flex-col justify-between">
+          <span class="text-xs font-medium text-slate-400">Peserta Selesai Dinilai</span>
+          <div class="flex items-baseline justify-between mt-2">
+            <span id="stat-peserta-selesai" class="text-2xl font-black text-emerald-400">0</span>
+            <i class="fas fa-check-circle text-emerald-400 text-lg"></i>
+          </div>
+        </div>
+        <div class="bento-card p-4 flex flex-col justify-between">
+          <span class="text-xs font-medium text-slate-400">Jumlah Juri Bertugas</span>
+          <div class="flex items-baseline justify-between mt-2">
+            <span id="stat-total-juri" class="text-2xl font-black text-amber-400">3</span>
+            <i class="fas fa-gavel text-amber-400 text-lg"></i>
+          </div>
+        </div>
+        <div class="bento-card p-4 flex flex-col justify-between">
+          <span class="text-xs font-medium text-slate-400">Kategori Lomba</span>
+          <div class="flex items-baseline justify-between mt-2">
+            <span id="stat-total-kategori" class="text-2xl font-black text-indigo-300">3</span>
+            <i class="fas fa-layer-group text-indigo-400 text-lg"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Controls Bar -->
+      <div class="bento-card p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <label class="text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">Filter Jenis Lomba:</label>
+          <select id="filter-kategori-leaderboard" onchange="renderLeaderboard()" class="w-full sm:w-48 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-medium">
+            <option value="ALL">Semua Jenis Lomba</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <button onclick="exportBeritaAcaraPDF()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg shadow-indigo-600/20">
+            <i class="fas fa-file-pdf"></i> Ekspor PDF Berita Acara
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Leaderboard Table -->
+      <div id="admin-leaderboard-view" class="bento-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-900/80 border-b border-slate-800 text-slate-400 text-[11px] uppercase tracking-wider font-bold">
+                <th class="py-3.5 px-4 text-center">Peringkat</th>
+                <th class="py-3.5 px-4">No. Reg</th>
+                <th class="py-3.5 px-4">Nama Peserta / Tim</th>
+                <th class="py-3.5 px-4">Asal Sekolah</th>
+                <th class="py-3.5 px-4">Jenis Lomba</th>
+                <th id="th-juri-headers" class="py-3.5 px-4 text-center">Rincian Skor Juri</th>
+                <th class="py-3.5 px-4 text-center">Total Skor</th>
+                <th class="py-3.5 px-4 text-center">Rata-Rata</th>
+                <th class="py-3.5 px-4 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-leaderboard" class="divide-y divide-slate-800/60 text-xs">
+              <!-- Rendered via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Public Viewer Lookup View -->
+      <div id="public-lookup-view" class="bento-card p-6 space-y-4 hidden">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i class="fas fa-search text-indigo-400"></i> Cari Hasil Nilai Peserta
+        </h3>
+        <div class="flex items-center gap-3">
+          <input type="text" id="public-search-input" placeholder="Masukkan Nomor Pendaftaran atau Nama Peserta..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+          <button onclick="handlePublicSearchSubmit()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/25">
+            Cari
+          </button>
+        </div>
+        <div id="public-search-results" class="pt-2"></div>
+      </div>
+
+    </section>
+
+    <!-- SECTION 2: PANEL PENILAIAN JURI -->
+    <section id="sec-juri" class="space-y-6 hidden">
+      <div class="bento-card p-6 space-y-6">
+        
+        <!-- Identity Active Judge Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Identitas Penilai Aktif</span>
+            <div class="flex items-center gap-3 mt-1">
+              <select id="select-active-juri" onchange="onActiveJudgeSelectChange(this.value)" class="bg-slate-900 border border-indigo-500/50 rounded-xl px-3.5 py-2 text-sm font-bold text-white focus:outline-none">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <div class="w-full md:w-auto">
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pilih Peserta Lomba:</label>
+            <select id="select-juri-peserta" onchange="onScorePesertaChange(this.value)" class="w-full md:w-80 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-semibold text-white focus:outline-none focus:border-indigo-500">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Scoring Form Container -->
+        <div id="juri-form-container" class="space-y-6">
+          <div id="juri-criteria-inputs" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Dynamic Numeric Inputs (0-100) rendered via JS -->
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Catatan / Masukan Juri (Opsional)</label>
+            <textarea id="juri-comment-input" rows="3" placeholder="Tuliskan saran atau masukan teknis untuk peserta ini..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-indigo-500"></textarea>
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button onclick="handleScoreSubmit()" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-8 py-3 rounded-xl transition shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2">
+              <i class="fas fa-save"></i> Simpan Penilaian
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 3: PLOTTING & PROGRESS PANITIA -->
+    <section id="sec-plotting" class="space-y-6 hidden">
+      <div class="bento-card p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fas fa-tasks text-indigo-400"></i> Matriks Plotting Penugasan Juri
+            </h3>
+            <p class="text-xs text-slate-400">Pantau kelengkapan nilai juri per peserta sesuai dengan kategori lombanya.</p>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Kategori:</label>
+            <select id="filter-kategori-plotting" onchange="renderPlottingTable()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white font-medium">
+              <option value="ALL">Semua Jenis Lomba</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-900/80 border-b border-slate-800 text-slate-400 text-[11px] uppercase tracking-wider font-bold">
+                <th class="py-3 px-4">No. Reg</th>
+                <th class="py-3 px-4">Nama Peserta</th>
+                <th class="py-3 px-4">Jenis Lomba</th>
+                <th id="th-plotting-juri-headers" class="py-3 px-4 text-center">Status Juri Bertugas</th>
+                <th class="py-3 px-4 text-center">Progres Total</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-plotting" class="divide-y divide-slate-800/60 text-xs">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: KELOLA PESERTA & EXCEL -->
+    <section id="sec-peserta" class="space-y-6 hidden">
+      <div class="bento-card p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i class="fas fa-users text-indigo-400"></i> Master Data Peserta Lomba
+            </h3>
+            <p class="text-xs text-slate-400">Tambah manual atau impor data massal peserta melalui berkas Excel.</p>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="downloadExcelTemplate()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1.5">
+              <i class="fas fa-download text-indigo-400"></i> Template Excel
+            </button>
+
+            <input type="file" id="input-excel-file" accept=".xlsx, .xls" onchange="handleExcelImport(this)" class="hidden">
+            <button onclick="document.getElementById('input-excel-file').click()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
+              <i class="fas fa-file-excel"></i> Impor Excel
+            </button>
+
+            <button onclick="openModalAddPeserta()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/20">
+              <i class="fas fa-plus"></i> Peserta Baru
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-900/80 border-b border-slate-800 text-slate-400 text-[11px] uppercase tracking-wider font-bold">
+                <th class="py-3 px-4">ID</th>
+                <th class="py-3 px-4">No. Pendaftaran</th>
+                <th class="py-3 px-4">Nama Lengkap / Tim</th>
+                <th class="py-3 px-4">Asal Sekolah</th>
+                <th class="py-3 px-4">Jenis Lomba</th>
+                <th class="py-3 px-4 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-peserta" class="divide-y divide-slate-800/60 text-xs">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: PENGATURAN & MASTER DYNAMIC JUDGES -->
+    <section id="sec-config" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Bento Box 1: Brand & Canvas Header Upload -->
+        <div class="bento-card p-6 space-y-5">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fas fa-image text-emerald-400"></i> Identitas & Kop Lomba
+            </h3>
+            <p class="text-xs text-slate-400">Kompresi otomatis Canvas Data URI untuk disimpan di database Google Sheets (CONFIG) dan ditampilkan pada header aplikasi.</p>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Nama Event Lomba</label>
+              <input type="text" id="cfg-event-title" oninput="updateHeaderTitleLive()" value="SMARTSPASA" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
             </div>
 
-            <!-- Action Sesi Login/Logout & Role Status -->
-            <div class="flex items-center gap-3">
-                <div id="badgeActiveRole" class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="roleLabelText">Umum</span>
-                </div>
-                <button id="btnLogout" onclick="handleLogout()" class="hidden bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                    Keluar Sesi
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Sub-Header Lomba</label>
+              <input type="text" id="cfg-event-subtitle" oninput="updateHeaderTitleLive()" value="Sistem Rekapitulasi & Penjurian Terintegrasi" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 pt-2">
+              <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-300">Logo Event (Max 300px)</label>
+                <input type="file" id="input-logo-file" accept="image/*" onchange="processImageCanvas(this, 'logo')" class="hidden">
+                <button onclick="document.getElementById('input-logo-file').click()" class="w-full py-2.5 bg-slate-900 border border-slate-700 hover:border-indigo-500 rounded-xl text-xs font-semibold text-slate-300 flex items-center justify-center gap-2">
+                  <i class="fas fa-upload"></i> Unggah Logo
                 </button>
+                <div id="preview-logo-box" class="h-20 bg-slate-900/50 border border-slate-800 rounded-xl flex items-center justify-center overflow-hidden">
+                  <span class="text-[10px] text-slate-500">Logo Default</span>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-300">Kop Lomba (Max 800px)</label>
+                <input type="file" id="input-kop-file" accept="image/*" onchange="processImageCanvas(this, 'kop')" class="hidden">
+                <button onclick="document.getElementById('input-kop-file').click()" class="w-full py-2.5 bg-slate-900 border border-slate-700 hover:border-indigo-500 rounded-xl text-xs font-semibold text-slate-300 flex items-center justify-center gap-2">
+                  <i class="fas fa-upload"></i> Unggah Kop
+                </button>
+                <div id="preview-kop-box" class="h-20 bg-slate-900/50 border border-slate-800 rounded-xl flex items-center justify-center overflow-hidden">
+                  <span class="text-[10px] text-slate-500">Kop Surat Default</span>
+                </div>
+              </div>
             </div>
-        </div>
-    </header>
 
-    <!-- Main Content Layout -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col justify-center">
-
-        <!-- Tab Bar Navigasi (Otomatis Menyeleksi Hak Akses Role) -->
-        <div class="flex border-b border-slate-200 mb-6 gap-2 overflow-x-auto pb-1 hidden" id="navTabs">
-            <button onclick="switchTab('login')" id="tabBtnLogin" class="px-4 py-2 text-xs font-bold text-blue-600 border-b-2 border-blue-600 whitespace-nowrap">
-                Portal Akses Utama
+            <button onclick="saveIdentityConfig()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/20">
+              Simpan Identitas & Header
             </button>
-            <button onclick="switchTab('umum')" id="tabBtnUmum" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 whitespace-nowrap">
-                Pencarian & Hasil Resmi
+          </div>
+        </div>
+
+        <!-- Bento Box 2: Dynamic N-Judges Engine Configurator -->
+        <div class="bento-card p-6 space-y-5">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fas fa-gavel text-amber-400"></i> Konfigurasi Jumlah Juri Dinamis ($N$-Judges Engine)
+              </h3>
+              <p class="text-xs text-slate-400">Atur jumlah juri secara dinamis tanpa mengubah kode program.</p>
+            </div>
+            <button onclick="openModalAddJudge()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0">
+              <i class="fas fa-plus-circle"></i> Juri Baru
             </button>
-            <button onclick="switchTab('juri')" id="tabBtnJuri" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 whitespace-nowrap hidden">
-                Penilaian Juri
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Jumlah Juri Bertugas</label>
+              <div class="flex items-center gap-3">
+                <input type="number" id="cfg-judge-count" min="1" max="15" value="3" class="w-24 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-center font-bold text-white text-base">
+                <button onclick="applyDynamicJudgeCount()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-lg shadow-amber-600/20">
+                  Update Jumlah Juri
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Mode Tampilan Papan Skor Ranking</label>
+              <select id="cfg-ranking-visibility" onchange="applyRankingVisibility()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white font-medium">
+                <option value="LIVE">Live Ranking (Tampilkan langsung dari skor juri yang sudah masuk)</option>
+                <option value="COMPLETE">Strict Complete (Hanya tampilkan posisi setelah SEMUA juri selesai menilai)</option>
+              </select>
+            </div>
+
+            <div class="pt-2">
+              <div class="flex justify-between items-center mb-2">
+                <p class="text-xs font-bold text-slate-300 uppercase tracking-wider">Daftar Juri Terkonfigurasi Saat Ini:</p>
+              </div>
+              <div id="dynamic-juri-config-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                <!-- Dynamic List -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bento Box 3: PIN Multi-Role Security Settings & Link Spreadsheet Utama -->
+        <div class="bento-card p-6 space-y-5 lg:col-span-2">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fas fa-link text-indigo-400"></i> Integrasi Google Sheets Utama & Kredensial PIN
+            </h3>
+            <p class="text-xs text-slate-400">Masukkan Link Spreadsheet utama dan URL Web App Google Apps Script untuk sinkronisasi data 100% otomatis.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Link Spreadsheet Utama Google Sheets</label>
+            <input type="text" id="cfg-spreadsheet-link" placeholder="https://docs.google.com/spreadsheets/d/1ABC.../edit" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-emerald-400 font-mono focus:outline-none focus:border-indigo-500">
+            <p class="text-[11px] text-slate-500 mt-1">Perubahan data peserta, nilai juri, dan konfigurasi akan langsung tersimpan di sel-sel spreadsheet ini.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">URL Web App Google Apps Script (Deployment Execution URL)</label>
+            <input type="text" id="cfg-gas-web-url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-indigo-300 font-mono focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-slate-800">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">PIN Super Admin</label>
+              <input type="text" id="cfg-pin-admin" value="9999" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono text-center">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">PIN Panitia</label>
+              <input type="text" id="cfg-pin-panitia" value="1234" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono text-center">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">PIN Default Juri</label>
+              <input type="text" id="cfg-pin-juri-default" value="1111" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono text-center">
+            </div>
+          </div>
+
+          <button onclick="savePinConfig()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/20">
+            Simpan Konfigurasi Spreadsheet & PIN Keamanan
+          </button>
+        </div>
+
+        <!-- Bento Box 4: Dynamic Category Manager -->
+        <div class="bento-card p-6 space-y-5 lg:col-span-2">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fas fa-layer-group text-indigo-400"></i> Kelola & Tambah Jenis Lomba (Kategori)
+            </h3>
+            <p class="text-xs text-slate-400">Tambah jenis lomba baru secara dinamis untuk pengelompokan peserta.</p>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center gap-3">
+            <input type="text" id="new-kat-name" placeholder="Nama Jenis Lomba Baru (misal: SMA/SMK / SMP/MTs / SD/MI)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-medium focus:outline-none focus:border-indigo-500">
+            <button onclick="addNewKategori()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/20 shrink-0 flex items-center justify-center gap-2">
+              <i class="fas fa-plus-circle"></i> Tambah Jenis Lomba
             </button>
-            <button onclick="switchTab('admin')" id="tabBtnAdmin" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 whitespace-nowrap hidden">
-                Pengaturan Admin & Data
-            </button>
+          </div>
+
+          <div>
+            <p class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2.5">Daftar Jenis Lomba Aktif:</p>
+            <div id="kat-list-container" class="flex flex-wrap gap-2">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
         </div>
 
-        <!-- ================= HALAMAN 1: HERO PORTAL AKSES LOGIN ================= -->
-        <section id="pageLoginHero" class="max-w-md mx-auto w-full space-y-4 my-auto">
-            <div class="bento-card p-8 border border-slate-200/80 shadow-xl bg-white rounded-3xl relative">
-                
-                <div class="flex justify-center mb-6">
-                    <div class="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    </div>
-                </div>
+      </div>
+    </section>
 
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-black text-slate-900 tracking-tight" id="heroBannerTitle">SMARTSPASA ASSESSMENT</h2>
-                    <p id="subEventStatus" class="text-xs font-bold text-blue-600 tracking-wider uppercase mt-1">EDISI EVENT</p>
-                    <p class="text-xs text-slate-500 font-medium mt-0.5">UPTD SPF SMP Negeri 1 Bondowoso</p>
-                </div>
+  </main>
 
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">PILIH PERAN HAK AKSES</label>
-                        <select id="mainLoginRole" onchange="toggleMainLoginRole()" class="w-full px-4 py-3 text-xs font-bold text-slate-800 bg-white border-2 border-blue-500 rounded-xl shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/20 cursor-pointer">
-                            <option value="UMUM">Publik / Umum (Pencarian Hasil)</option>
-                            <option value="JURI">Penilai Lomba / Juri</option>
-                            <option value="PANITIA">Panitia (Organizer)</option>
-                            <option value="ADMIN">Super Admin</option>
-                        </select>
-                    </div>
+  <!-- Footer -->
+  <footer class="mt-auto bg-slate-950 border-t border-slate-800 py-4 px-6 text-center text-xs text-slate-500">
+    <p>&copy; ariefcaturk ; &reg; UPTD SPF SMP Negeri 1 Bondowoso ; &reg; SMARTSPASA</p>
+  </footer>
 
-                    <!-- Input Login Publik -->
-                    <div id="mainWrapperUmum" class="pt-1">
-                        <p class="text-xs text-slate-500 mb-3 text-center leading-relaxed">Akses pencarian data peserta & perolehan peringkat hasil lomba yang telah ditetapkan panitia.</p>
-                        <button onclick="execMainLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-xs font-bold transition shadow-md shadow-blue-500/20 active:scale-[0.98]">
-                            Masuk Portal Publik
-                        </button>
-                    </div>
+  <!-- APP ENGINE & SPA LOGIC -->
+  <script>
+    // Global Databases & Variables
+    let databasePeserta = [];
+    let databaseNilai = [];
+    let databasePlotting = [];
 
-                    <!-- Input Login Juri (Dynamic N-Juri Matrix PIN Slot) -->
-                    <div id="mainWrapperJuri" class="space-y-3 hidden pt-1">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Cabang Lomba</label>
-                            <select id="mainSelectLomba" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-semibold text-slate-700">
-                                <!-- Dynamic Options -->
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Penilai (Contoh: wxyz-J1, wxyz-J2)</label>
-                            <input type="password" id="mainPinJuri" placeholder="Masukkan PIN Juri Slot Ke-N..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <button onclick="execMainLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-xs font-bold transition shadow-md shadow-blue-500/20">
-                            Masuk Sesi Penilai Juri
-                        </button>
-                    </div>
+    let currentUserRole = 'PUBLIC'; // PUBLIC, ADMIN, PANITIA, JURI1, JURI2...
+    let currentJudgeId = 'JURI1';
+    let activeTab = 'leaderboard';
+    let compressedLogoData = '';
+    let compressedKopData = '';
+    let gasWebAppUrl = '';
+    let mainSpreadsheetLink = '';
 
-                    <!-- Input Login Panitia -->
-                    <div id="mainWrapperPanitia" class="space-y-3 hidden pt-1">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Rahasia Panitia</label>
-                            <input type="password" id="mainPinPanitia" placeholder="Masukkan PIN Panitia..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <button onclick="execMainLogin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-xs font-bold transition shadow-md">
-                            Masuk Portal Panitia
-                        </button>
-                    </div>
+    let appConfig = {
+      title: "SMARTSPASA",
+      subtitle: "Sistem Rekapitulasi & Penjurian Terintegrasi",
+      theme: "dark",
+      rankingVisibility: "LIVE",
+      pinAdmin: "9999",
+      pinPanitia: "1234",
+      pinJuriDefault: "1111",
+      categories: ["SD/MI"],
+      judges: [
+        { id: "JURI1", name: "Juri 1 - Utama", pin: "1111", jenisLomba: "ALL", criteria: ["Dasar 1 (0-100)", "Madya 1 (0-100)", "Utama 1 (0-100)"] },
+        { id: "JURI2", name: "Juri 2 - Madya", pin: "2222", jenisLomba: "ALL", criteria: ["Dasar 2 (0-100)", "Madya 2 (0-100)", "Utama 2 (0-100)"] },
+        { id: "JURI3", name: "Juri 3 - Utama", pin: "3333", jenisLomba: "ALL", criteria: ["Dasar 3 (0-100)", "Madya 3 (0-100)", "Utama 3 (0-100)"] }
+      ]
+    };
 
-                    <!-- Input Login Admin -->
-                    <div id="mainWrapperAdmin" class="space-y-3 hidden pt-1">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Master Super Admin</label>
-                            <input type="password" id="mainPinAdmin" placeholder="Masukkan PIN Master Super Admin..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <button onclick="execMainLogin()" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-xl text-xs font-bold transition shadow-md">
-                            Masuk Sesi Super Admin
-                        </button>
-                    </div>
-                </div>
+    // UI Toast System
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      const bg = type === 'success' ? 'bg-emerald-600' : (type === 'error' ? 'bg-rose-600' : 'bg-indigo-600');
+      toast.className = `${bg} text-white text-xs font-bold px-4 py-3 rounded-xl shadow-xl flex items-center justify-between gap-3 transition-all transform duration-300 translate-y-2 opacity-0`;
+      toast.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+      setTimeout(() => { toast.remove(); }, 4000);
+    }
 
-                <div class="mt-8 pt-4 border-t border-slate-100 text-center">
-                    <p class="text-[11px] text-slate-400 font-medium">
-                        &reg; ariefcaturk | &copy; UPTD SPF SMP Negeri 1 Bondowoso | &copy; SMARTSPASA
-                    </p>
-                </div>
-            </div>
-        </section>
+    // Modal Manager
+    function openModal(contentHtml) {
+      const modal = document.getElementById('modal-overlay');
+      const body = document.getElementById('modal-body');
+      if (modal && body) {
+        body.innerHTML = contentHtml;
+        modal.classList.remove('hidden');
+      }
+    }
 
-        <!-- ================= HALAMAN 2: TAMU / UMUM (HASIL & SEARCH) ================= -->
-        <section id="pageUmum" class="space-y-6 hidden">
-            <div class="bento-card p-6 bg-gradient-to-r from-slate-900 to-blue-900 text-white relative overflow-hidden">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-                    <div>
-                        <span class="bg-emerald-500/30 text-emerald-200 text-xs px-3 py-1 rounded-full border border-emerald-400/30 font-semibold">Pengumuman Hasil Resmi</span>
-                        <h2 class="text-xl sm:text-2xl font-bold mt-2" id="bannerTitleUmum">SMARTSPASA ASSESSMENT</h2>
-                        <p class="text-slate-300 text-xs mt-1">Perolehan nilai rata-rata resmi tim juri yang telah disahkan oleh Ketua Pelaksana.</p>
-                    </div>
-                    <button onclick="handleLogout()" class="self-start sm:self-auto text-xs bg-white/10 hover:bg-white/20 text-white border border-white/20 px-3 py-1.5 rounded-lg font-semibold transition">
-                        ← Portal Login
-                    </button>
-                </div>
-            </div>
+    function closeModal() {
+      const modal = document.getElementById('modal-overlay');
+      if (modal) modal.classList.add('hidden');
+    }
 
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <!-- Search Box -->
-                <div class="bento-card p-6 lg:col-span-1 space-y-4">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900">Pencarian Peserta</h3>
-                        <p class="text-[11px] text-slate-500">Ketik Nomor Registrasi / Nama Siswa (Real-time Debounce 300ms)</p>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Cari Data</label>
-                        <input type="text" id="inputSearchNo" oninput="handleSearchDebounce()" placeholder="Contoh: SMP-2026-001..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
-                    </div>
-                    <div class="pt-2 border-t border-slate-100">
-                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Publikasi:</span>
-                        <p class="text-xs text-slate-600 leading-normal">Nilai bertanda <span class="font-bold text-amber-600">***</span> menunjukkan nilai masih dalam tahap rekapitulasi draft / belum 100% lengkap (Mode Strict).</p>
-                    </div>
-                </div>
+    // Theme Switcher Handler
+    function toggleTheme() {
+      const newTheme = (appConfig.theme === 'dark') ? 'light' : 'dark';
+      applyTheme(newTheme);
+    }
 
-                <!-- Data Table Hasil Resmi -->
-                <div class="bento-card p-6 lg:col-span-3 space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <h3 class="text-sm font-bold text-slate-900">Perolehan Nilai & Peringkat Resmi</h3>
-                        <div class="w-full sm:w-64">
-                            <select id="selectFilterLombaUmum" onchange="renderTabelUmum(1)" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-slate-700">
-                                <option value="ALL">Semua Cabang Lomba</option>
-                            </select>
-                        </div>
-                    </div>
+    function applyTheme(theme) {
+      appConfig.theme = theme;
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-toggle-icon');
+      const text = document.getElementById('theme-toggle-text');
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100 text-slate-600 border-b border-slate-200">
-                                    <th class="p-2.5 font-bold">No. Reg</th>
-                                    <th class="p-2.5 font-bold">Nama Peserta</th>
-                                    <th class="p-2.5 font-bold">Asal Sekolah</th>
-                                    <th class="p-2.5 font-bold">Cabang Lomba</th>
-                                    <th class="p-2.5 font-bold text-center">Nilai Akhir (Rata-Rata)</th>
-                                    <th class="p-2.5 font-bold text-center">Status / Peringkat</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelHasilUmum" class="divide-y divide-slate-200">
-                                <tr><td colspan="6" class="p-4 text-center text-slate-400">Memuat data dari server...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
+      if (theme === 'dark') {
+        html.classList.add('dark');
+        if (icon) icon.className = 'fas fa-moon text-amber-400';
+        if (text) text.innerText = 'Gelap';
+      } else {
+        html.classList.remove('dark');
+        if (icon) icon.className = 'fas fa-sun text-amber-500';
+        if (text) text.innerText = 'Terang';
+      }
+      saveAppState();
+    }
 
-                    <!-- Server-Side Pagination Bar Controls -->
-                    <div class="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-slate-200 gap-3 text-xs">
-                        <div class="flex items-center gap-2 text-slate-500">
-                            <span>Tampilkan:</span>
-                            <select id="pageSizeUmum" onchange="renderTabelUmum(1)" class="border border-slate-300 rounded px-2 py-1 text-xs font-semibold">
-                                <option value="10">10 Baris</option>
-                                <option value="25">25 Baris</option>
-                                <option value="50">50 Baris</option>
-                            </select>
-                            <span id="pageInfoUmum" class="font-medium text-slate-600">Halaman 1 dari 1</span>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <button onclick="changePageUmum(-1)" id="btnPrevUmum" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 border rounded font-semibold text-slate-700 transition">Sebelumnya</button>
-                            <button onclick="changePageUmum(1)" id="btnNextUmum" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 border rounded font-semibold text-slate-700 transition">Selanjutnya</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= HALAMAN 3: PENILAI LOMBA (JURI) ================= -->
-        <section id="pageJuri" class="space-y-6 hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Info Juri & Cabang -->
-                <div class="bento-card p-6 lg:col-span-1 space-y-4">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900">Identitas Penilai Lomba</h3>
-                        <p class="text-[11px] text-slate-500">Slot Juri Terbaca Otomatis dari PIN Dynamic Matrix</p>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Cabang Lomba Ditugaskan</label>
-                            <input type="text" id="juriLombaActiveName" readonly class="w-full px-3 py-2 text-xs bg-slate-100 border border-slate-300 rounded-lg font-bold text-blue-700">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Slot Juri Ke-N</label>
-                                <input type="text" id="juriIndexActive" readonly class="w-full px-3 py-2 text-xs bg-blue-50 border border-blue-200 text-blue-800 rounded-lg font-black text-center">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Total Juri Lomba</label>
-                                <input type="text" id="juriTotalCountActive" readonly class="w-full px-3 py-2 text-xs bg-slate-100 border border-slate-300 text-slate-700 rounded-lg font-bold text-center">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Juri / Penilai</label>
-                            <input type="text" id="inputNamaJuriActive" placeholder="Ketik nama juri..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-semibold">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Konfigurasi Indikator Lomba -->
-                <div class="bento-card p-6 lg:col-span-2 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-sm font-bold text-slate-900">Indikator & Bobot Penilaian Lomba</h3>
-                            <p class="text-[11px] text-slate-500">Struktur indikator berlaku untuk seluruh juri pada cabang ini. Total bobot WAJIB 100%.</p>
-                        </div>
-                        <button onclick="tambahRowIndikator()" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-                            + Indikator
-                        </button>
-                    </div>
-
-                    <div id="containerIndikator" class="space-y-2 my-2 max-h-40 overflow-y-auto pr-1"></div>
-
-                    <div class="flex items-center justify-between border-t border-slate-200 pt-3 text-xs font-semibold">
-                        <span>Akumulasi Bobot: <span id="textTotalBobot" class="font-bold text-blue-600">0%</span></span>
-                        <button onclick="simpanIndikatorLomba()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg transition">
-                            Simpan Struktur Indikator
-                        </button>
-                    </div>
-                </div>
+    // Role Switcher Modal
+    function openRoleSwitchModal() {
+      let judgeOptions = appConfig.judges.map(j => `<option value="${j.id}">${j.name} (${j.jenisLomba})</option>`).join('');
+      const html = `
+        <div class="space-y-4">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fas fa-user-shield text-indigo-400"></i> Alih Peranan Pengguna
+          </h3>
+          
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Peranan Pengguna:</label>
+              <select id="modal-role-select" onchange="togglePinInputVisibility(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white font-medium">
+                <option value="PUBLIC">Public Viewer (Hanya Lihat Skor)</option>
+                <option value="ADMIN">Super Admin</option>
+                <option value="PANITIA">Panitia</option>
+                ${judgeOptions}
+              </select>
             </div>
 
-            <!-- Tabel Lembar Penilaian Peserta -->
-            <div class="bento-card p-6 space-y-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900">Lembar Penilaian Peserta Lomba</h3>
-                        <p class="text-[11px] text-slate-500">Input skor per indikator (0 - 100). Nilai tersimpan terpisah per slot juri.</p>
-                    </div>
-                    <button onclick="openModalTambahPesertaJuri()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
-                        + Tambah Peserta OTS
-                    </button>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-600 border-b border-slate-200">
-                                <th class="p-2.5 font-bold">No. Reg</th>
-                                <th class="p-2.5 font-bold">Nama Peserta</th>
-                                <th class="p-2.5 font-bold">Asal Sekolah</th>
-                                <th class="p-2.5 font-bold">Input Skor Indikator Penilaian</th>
-                                <th class="p-2.5 font-bold text-center">Nilai Akhir Juri</th>
-                                <th class="p-2.5 font-bold">Catatan Juri</th>
-                                <th class="p-2.5 font-bold text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelPenilaianJuri" class="divide-y divide-slate-200">
-                            <!-- Dynamic Rendered -->
-                        </tbody>
-                    </table>
-                </div>
+            <div id="modal-pin-wrapper" class="hidden">
+              <label class="block text-xs font-bold text-slate-400 uppercase mb-1">PIN Keamanan Akses:</label>
+              <input type="password" id="modal-role-pin" placeholder="Masukkan PIN..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white">
             </div>
-        </section>
+          </div>
 
-        <!-- ================= HALAMAN 4: PENGATURAN SUPER ADMIN ================= -->
-        <section id="pageAdmin" class="space-y-6 hidden">
-            <!-- Grid 1: Identitas & Media Berkas -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bento-card p-6 lg:col-span-1 space-y-3">
-                    <h3 class="text-sm font-bold text-slate-900">Pengaturan Event & Keamanan PIN</h3>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">SMARTSPASA KE-</label>
-                        <input type="text" id="adminEdisi" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Ketua Pelaksana</label>
-                        <input type="text" id="adminKetua" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">NIP Ketua Pelaksana</label>
-                        <input type="text" id="adminNipKetua" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">PIN Master Super Admin</label>
-                        <input type="password" id="adminPin" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">PIN Rahasia Panitia (Organizer)</label>
-                        <input type="password" id="adminPinPanitia" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Mode Ranking Publik</label>
-                        <select id="adminModeRanking" class="w-full px-3 py-1.5 text-xs border border-slate-300 rounded-lg font-bold text-blue-700">
-                            <option value="STRICT">Strict Complete (Publikasi Setelah 100% Juri Menilai)</option>
-                            <option value="LIVE">Live Average (Tampilkan Langsung Rata-Rata Sementara)</option>
-                        </select>
-                    </div>
-                    <button onclick="simpanPengaturanEvent()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-xs font-bold transition">
-                        Simpan Identitas & Sakelar Mode
-                    </button>
-                </div>
-
-                <!-- Media Upload (Logo & Kop Surat Zero-Drive Storage) -->
-                <div class="bento-card p-6 lg:col-span-2 space-y-4">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900">Upload Media Berkas (Logo & Kop Surat Lomba)</h3>
-                        <p class="text-[11px] text-slate-500">Berkas gambar dikompresi otomatis via HTML5 Canvas (max 800px) & disimpan langsung di sel database tanpa perlu folder Google Drive.</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-2xl p-4 text-center transition">
-                            <span class="block text-xs font-bold text-slate-700 mb-2">Logo Sekolah / Event</span>
-                            <input type="file" id="fileLogoInput" accept="image/*" onchange="previewCompressImage(this, 'logo')" class="hidden">
-                            <button onclick="document.getElementById('fileLogoInput').click()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                                Pilih Gambar Logo
-                            </button>
-                            <div class="mt-3 flex justify-center">
-                                <img id="previewLogoImg" src="" class="h-16 object-contain hidden border rounded p-1">
-                            </div>
-                        </div>
-
-                        <div class="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-2xl p-4 text-center transition">
-                            <span class="block text-xs font-bold text-slate-700 mb-2">Kop Surat Lomba Resmi</span>
-                            <input type="file" id="fileKopInput" accept="image/*" onchange="previewCompressImage(this, 'kop')" class="hidden">
-                            <button onclick="document.getElementById('fileKopInput').click()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                                Pilih Gambar Kop Surat
-                            </button>
-                            <div class="mt-3 flex justify-center">
-                                <img id="previewKopImg" src="" class="h-16 object-contain hidden border rounded p-1">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Grid 2: Kelola Cabang Lomba & Dynamic N-Juri Configuration -->
-            <div class="bento-card p-6 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-900">Kelola Cabang Lomba & Pengaturan N-Juri Dinamis</h3>
-                        <p class="text-[11px] text-slate-500">Tentukan jumlah juri (misal: 1, 3, 5, 7) per cabang lomba. PIN Juri dibuat otomatis berformat slot (`{PIN}-J1`, `{PIN}-J2`, dst.).</p>
-                    </div>
-                    <button onclick="openModalTambahLomba()" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
-                        + Tambah Cabang Lomba
-                    </button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-600 border-b">
-                                <th class="p-2.5 font-bold">ID Lomba</th>
-                                <th class="p-2.5 font-bold">Nama Cabang Lomba</th>
-                                <th class="p-2.5 font-bold text-center">Jumlah Juri (N)</th>
-                                <th class="p-2.5 font-bold">Base PIN Juri</th>
-                                <th class="p-2.5 font-bold">Status Otorisasi Pengumuman</th>
-                                <th class="p-2.5 font-bold text-center">Aksi Otorisasi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelAdminLomba" class="divide-y divide-slate-200">
-                            <!-- Dynamic Rendered -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Grid 3: Excel Impor Client-Side -->
-            <div class="bento-card p-6 space-y-3">
-                <h3 class="text-sm font-bold text-slate-900">Impor Data Peserta via Excel (.xlsx)</h3>
-                <p class="text-[11px] text-slate-500">Unduh format template standar Excel lalu unggah untuk mendaftarkan peserta hingga 1.000 siswa secara instan.</p>
-                <div class="flex flex-wrap gap-2 pt-2">
-                    <button onclick="downloadExcelTemplate()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-xs font-bold transition">Unduh Template Excel</button>
-                    <input type="file" id="fileExcelImport" accept=".xlsx, .xls" class="hidden" onchange="handleImportExcel(this)">
-                    <button onclick="document.getElementById('fileExcelImport').click()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition shadow-sm">Impor File Excel (.xlsx)</button>
-                </div>
-            </div>
-
-            <!-- Grid 4: PUSAT CETAK 3 LAPORAN PDF CLIENT-SIDE INSTAN -->
-            <div class="bento-card p-6 bg-slate-900 text-white space-y-4">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <span class="bg-blue-500/20 text-blue-300 text-xs px-2.5 py-0.5 rounded border border-blue-500/30 font-bold">Instant Client-Side Export (jsPDF & AutoTable)</span>
-                        <h3 class="text-lg font-extrabold mt-1">Pusat Cetak Laporan Resmi Lomba</h3>
-                        <p class="text-slate-400 text-xs mt-0.5">Laporan otomatis dilengkapi Gambar Logo, Kop Surat, dan Kolom Tanda Tangan Ketua Pelaksana & Juri Penilai.</p>
-                    </div>
-                    <div class="w-full md:w-72">
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Pilih Cabang Lomba Dicetak:</label>
-                        <select id="selectLombaCetakAdmin" class="w-full px-3 py-2 text-xs bg-slate-800 border border-slate-700 rounded-lg text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"></select>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                    <button onclick="generatePDFLaporan('rekap')" class="p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition flex flex-col justify-between group">
-                        <div>
-                            <span class="text-[10px] font-extrabold text-blue-400 tracking-wider">DOKUMEN 1</span>
-                            <h4 class="font-bold text-sm text-white group-hover:text-blue-300 mt-1">Rekap Nilai Peserta</h4>
-                            <p class="text-[11px] text-slate-400 mt-1">Daftar nilai akhir lengkap & peringkat dari seluruh peserta.</p>
-                        </div>
-                        <span class="text-xs font-bold text-blue-400 mt-4 block">Unduh PDF →</span>
-                    </button>
-
-                    <button onclick="generatePDFLaporan('berita_acara')" class="p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition flex flex-col justify-between group">
-                        <div>
-                            <span class="text-[10px] font-extrabold text-emerald-400 tracking-wider">DOKUMEN 2</span>
-                            <h4 class="font-bold text-sm text-white group-hover:text-emerald-300 mt-1">Berita Acara Penilaian</h4>
-                            <p class="text-[11px] text-slate-400 mt-1">Dokumen penetapan sah juara 1, 2, dan 3 per cabang lomba.</p>
-                        </div>
-                        <span class="text-xs font-bold text-emerald-400 mt-4 block">Unduh PDF →</span>
-                    </button>
-
-                    <button onclick="generatePDFLaporan('analisis')" class="p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition flex flex-col justify-between group">
-                        <div>
-                            <span class="text-[10px] font-extrabold text-amber-400 tracking-wider">DOKUMEN 3</span>
-                            <h4 class="font-bold text-sm text-white group-hover:text-amber-300 mt-1">Analisis Data Penilaian</h4>
-                            <p class="text-[11px] text-slate-400 mt-1">Statistik nilai tertinggi, terendah, dan rata-rata keseluruhan.</p>
-                        </div>
-                        <span class="text-xs font-bold text-amber-400 mt-4 block">Unduh PDF →</span>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer Resmi Aplikasi -->
-    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-medium">
-            <p>&reg; ariefcaturk | &copy; UPTD SPF SMP Negeri 1 Bondowoso | &copy; SMARTSPASA</p>
+          <button onclick="submitRoleSwitch()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 rounded-xl transition">
+            Konfirmasi Masuk
+          </button>
         </div>
-    </footer>
+      `;
+      openModal(html);
+    }
 
-    <!-- MODAL TAMBAH PESERTA OTS -->
-    <div id="modalTambahPeserta" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center modal-overlay p-4">
-        <div class="bento-card max-w-md w-full p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="font-bold text-slate-900 text-base">Tambah Peserta On-The-Spot</h3>
-                <button onclick="closeModalTambahPeserta()" class="text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
-            </div>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nomor Registrasi / Pendaftaran</label>
-                    <input type="text" id="otsNoReg" placeholder="Contoh: SMP-2026-999" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-semibold">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap Siswa</label>
-                    <input type="text" id="otsNama" placeholder="Nama Peserta..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-semibold">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Asal Sekolah</label>
-                    <input type="text" id="otsSekolah" placeholder="Asal Sekolah..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-semibold">
-                </div>
-            </div>
-            <div class="pt-2 flex justify-end gap-2">
-                <button onclick="closeModalTambahPeserta()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-bold rounded-lg">Batal</button>
-                <button onclick="simpanPesertaOTS()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg">Simpan Peserta</button>
-            </div>
-        </div>
-    </div>
+    function togglePinInputVisibility(role) {
+      const pinWrap = document.getElementById('modal-pin-wrapper');
+      if (pinWrap) {
+        if (role === 'PUBLIC') pinWrap.classList.add('hidden');
+        else pinWrap.classList.remove('hidden');
+      }
+    }
 
-    <!-- MODAL TAMBAH CABANG LOMBA ADMIN -->
-    <div id="modalTambahLomba" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center modal-overlay p-4">
-        <div class="bento-card max-w-md w-full p-6 space-y-4">
-            <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="font-bold text-slate-900 text-base">Tambah Cabang Lomba Baru</h3>
-                <button onclick="closeModalTambahLomba()" class="text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
-            </div>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Cabang Lomba</label>
-                    <input type="text" id="adminNewNamaLomba" placeholder="Contoh: Lomba Solo Vocal" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-semibold">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Jumlah Juri Penilai (N)</label>
-                    <input type="number" id="adminNewJumlahJuri" min="1" max="15" value="3" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-bold text-blue-700">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Base PIN Rahasia Juri</label>
-                    <input type="text" id="adminNewPinJuri" placeholder="Contoh: wxyz (Sistem akan membuat wxyz-J1, wxyz-J2...)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg font-semibold">
-                </div>
-            </div>
-            <div class="pt-2 flex justify-end gap-2">
-                <button onclick="closeModalTambahLomba()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-bold rounded-lg">Batal</button>
-                <button onclick="simpanLombaBaruAdmin()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg">Simpan Cabang Lomba</button>
-            </div>
-        </div>
-    </div>
+    function submitRoleSwitch() {
+      const role = document.getElementById('modal-role-select').value;
+      const pin = document.getElementById('modal-role-pin')?.value || '';
 
-    <!-- JAVASCRIPT PRODUCTION SUITE (VANILLA ES6+) -->
-    <script>
-        /**
-         * PLACEHOLDER URL GOOGLE APPS SCRIPT WEB APP
-         * Tempelkan URL deployment Web App Apps Script Anda di bawah ini:
-         */
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwJ6Y0P8GdFq4zrP5yQ2VBWjBA3xuHL5Jtw4rBTPgG1GWwh0Bp8uV_HGXKiesZJt_7xbQ/exec";
+      if (role === 'PUBLIC') {
+        currentUserRole = 'PUBLIC';
+        updateRoleBadge();
+        switchTab('leaderboard');
+        closeModal();
+        showToast('Beralih ke mode Public Viewer', 'info');
+        return;
+      }
 
-        // State Utama Aplikasi (KOSONG UNTUK PRODUCTION LIVE)
-        let APP_CONFIG = {
-            edisi: '27',
-            ketua: 'Drs. Heru Purwanto, M.Pd.',
-            nipKetua: '19750812 200003 1 004',
-            pinAdmin: '123456',
-            pinPanitia: '888999',
-            modeRanking: 'STRICT',
-            logoBase64: '',
-            kopBase64: ''
+      let valid = false;
+      if (role === 'ADMIN' && pin === appConfig.pinAdmin) valid = true;
+      if (role === 'PANITIA' && pin === appConfig.pinPanitia) valid = true;
+      if (role.startsWith('JURI')) {
+        const jObj = appConfig.judges.find(j => j.id === role);
+        if (jObj && (pin === jObj.pin || pin === appConfig.pinJuriDefault)) valid = true;
+      }
+
+      if (valid) {
+        currentUserRole = role;
+        if (role.startsWith('JURI')) currentJudgeId = role;
+        updateRoleBadge();
+        updateActiveJudgeDisplay();
+        closeModal();
+        showToast(`Berhasil masuk sebagai ${role}`, 'success');
+        if (role.startsWith('JURI')) switchTab('juri');
+        else switchTab('leaderboard');
+      } else {
+        showToast('PIN Keamanan tidak sesuai!', 'error');
+      }
+    }
+
+    // Navigation Tab Switcher
+    function switchTab(tabId, isInitial = false) {
+      if (currentUserRole === 'PUBLIC' && tabId !== 'leaderboard') {
+        showToast('Akses dibatasi! Pengunjung publik hanya dapat melihat Papan Skor.', 'error');
+        tabId = 'leaderboard';
+      }
+
+      activeTab = tabId;
+      
+      const sections = ['sec-leaderboard', 'sec-juri', 'sec-plotting', 'sec-peserta', 'sec-config'];
+      sections.forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.classList.add('hidden');
+      });
+
+      const tabs = ['leaderboard', 'juri', 'plotting', 'peserta', 'config'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (btn) {
+          if (t === tabId) {
+            btn.classList.add('bg-indigo-600', 'text-white', 'active');
+            btn.classList.remove('text-slate-400', 'hover:bg-slate-800');
+          } else {
+            btn.classList.remove('bg-indigo-600', 'text-white', 'active');
+            btn.classList.add('text-slate-400', 'hover:bg-slate-800');
+          }
+        }
+      });
+
+      const targetSec = document.getElementById(`sec-${tabId}`);
+      if (targetSec) targetSec.classList.remove('hidden');
+
+      if (tabId === 'leaderboard') renderLeaderboard();
+      if (tabId === 'plotting') renderPlottingTable();
+      if (tabId === 'peserta') renderPesertaTable();
+      if (tabId === 'juri') populateJuriPesertaDropdown();
+
+      if (!isInitial) saveAppState();
+    }
+
+    function saveAppState() {
+      const stateToSave = {
+        currentUserRole,
+        currentJudgeId,
+        activeTab,
+        appConfig,
+        databasePeserta,
+        databaseNilai,
+        databasePlotting,
+        compressedLogoData,
+        compressedKopData,
+        gasWebAppUrl,
+        mainSpreadsheetLink
+      };
+      try {
+        localStorage.setItem('rekap_komando_v3_state', JSON.stringify(stateToSave));
+      } catch (e) {
+        console.warn('LocalStorage disabled or limited:', e);
+      }
+    }
+
+    function syncToGAS(action, payload = {}) {
+      if (!gasWebAppUrl) return;
+      
+      const fullPayload = {
+        action: action,
+        spreadsheetUrl: mainSpreadsheetLink,
+        peserta: databasePeserta,
+        juri: appConfig.judges,
+        nilai: databaseNilai,
+        config: appConfig,
+        logo: compressedLogoData,
+        kop: compressedKopData,
+        ...payload
+      };
+
+      fetch(gasWebAppUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fullPayload)
+      }).then(() => {
+        console.log(`[GAS Sync] Action '${action}' disinkronkan ke Google Sheets.`);
+      }).catch(err => {
+        console.warn('[GAS Sync Error]:', err);
+      });
+    }
+
+    function loadAppState() {
+      try {
+        const saved = localStorage.getItem('rekap_komando_v3_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.currentUserRole) currentUserRole = parsed.currentUserRole;
+          if (parsed.currentJudgeId) currentJudgeId = parsed.currentJudgeId;
+          if (parsed.activeTab) activeTab = parsed.activeTab;
+          if (parsed.appConfig) {
+            appConfig = parsed.appConfig;
+            if (!appConfig.theme) appConfig.theme = 'dark';
+          }
+          if (parsed.databasePeserta) databasePeserta = parsed.databasePeserta;
+          if (parsed.databaseNilai) databaseNilai = parsed.databaseNilai;
+          if (parsed.databasePlotting) databasePlotting = parsed.databasePlotting;
+          if (parsed.compressedLogoData) compressedLogoData = parsed.compressedLogoData;
+          if (parsed.compressedKopData) compressedKopData = parsed.compressedKopData;
+          if (parsed.gasWebAppUrl) gasWebAppUrl = parsed.gasWebAppUrl;
+          if (parsed.mainSpreadsheetLink) mainSpreadsheetLink = parsed.mainSpreadsheetLink;
+        }
+      } catch (e) {
+        console.warn('Gagal memuat state dari LocalStorage:', e);
+      }
+    }
+
+    function updateRoleBadge() {
+      const badge = document.getElementById('current-role-badge');
+      if (!badge) return;
+      
+      let label = currentUserRole;
+      if (currentUserRole.startsWith('JURI')) {
+        const jObj = appConfig.judges.find(j => j.id === currentUserRole);
+        label = jObj ? jObj.name : currentUserRole;
+      } else if (currentUserRole === 'ADMIN') {
+        label = 'SUPER ADMIN';
+      } else if (currentUserRole === 'PANITIA') {
+        label = 'PANITIA';
+      } else {
+        label = 'PUBLIC VIEWER';
+      }
+      
+      badge.innerText = label.toUpperCase();
+
+      const tabJuri = document.getElementById('tab-btn-juri');
+      const tabPlotting = document.getElementById('tab-btn-plotting');
+      const tabPeserta = document.getElementById('tab-btn-peserta');
+      const tabConfig = document.getElementById('tab-btn-config');
+
+      if (currentUserRole === 'PUBLIC') {
+        if (tabJuri) tabJuri.classList.add('hidden');
+        if (tabPlotting) tabPlotting.classList.add('hidden');
+        if (tabPeserta) tabPeserta.classList.add('hidden');
+        if (tabConfig) tabConfig.classList.add('hidden');
+        document.getElementById('public-lookup-view')?.classList.remove('hidden');
+        document.getElementById('admin-leaderboard-view')?.classList.add('hidden');
+      } else {
+        if (tabJuri) tabJuri.classList.remove('hidden');
+        if (tabPlotting) tabPlotting.classList.remove('hidden');
+        if (tabPeserta) tabPeserta.classList.remove('hidden');
+        if (tabConfig) tabConfig.classList.remove('hidden');
+        document.getElementById('public-lookup-view')?.classList.add('hidden');
+        document.getElementById('admin-leaderboard-view')?.classList.remove('hidden');
+      }
+    }
+
+    function updateActiveJudgeDisplay() {
+      const sel = document.getElementById('select-active-juri');
+      if (!sel) return;
+      sel.innerHTML = appConfig.judges.map(j => `<option value="${j.id}" ${j.id === currentJudgeId ? 'selected' : ''}>${j.name} (${j.jenisLomba})</option>`).join('');
+      if (!currentUserRole.startsWith('JURI') && currentUserRole !== 'PUBLIC') {
+        sel.disabled = false;
+      } else if (currentUserRole.startsWith('JURI')) {
+        currentJudgeId = currentUserRole;
+        sel.value = currentJudgeId;
+        sel.disabled = true;
+      }
+    }
+
+    function onActiveJudgeSelectChange(val) {
+      currentJudgeId = val;
+      populateJuriPesertaDropdown();
+    }
+
+    function renderLogoAndKopDisplay() {
+      const logoBox = document.getElementById('app-logo-box');
+      if (logoBox) {
+        if (compressedLogoData) {
+          logoBox.innerHTML = `<img src="${compressedLogoData}" class="w-full h-full object-contain">`;
+        } else {
+          logoBox.innerHTML = `<i class="fas fa-trophy text-slate-950 text-xl"></i>`;
+        }
+      }
+
+      const kopBanner = document.getElementById('header-kop-banner');
+      const kopImg = document.getElementById('header-kop-img');
+      if (kopBanner && kopImg) {
+        if (compressedKopData) {
+          kopImg.src = compressedKopData;
+          kopBanner.classList.remove('hidden');
+        } else {
+          kopBanner.classList.add('hidden');
+        }
+      }
+    }
+
+    function processImageCanvas(input, type) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const maxDim = type === 'logo' ? 300 : 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL('image/png', 0.85);
+          if (type === 'logo') {
+            compressedLogoData = dataUrl;
+          } else {
+            compressedKopData = dataUrl;
+          }
+          renderLogoAndKopDisplay();
+          saveAppState();
+          showToast(`Gambar ${type} berhasil dikompresi!`, 'success');
         };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
 
-        let LOMBA_LIST = [];
-        let PESERTA_LIST = [];
-        let NILAI_LIST = [];
+    function updateHeaderTitleLive() {
+      const titleInput = document.getElementById('cfg-event-title');
+      const subtitleInput = document.getElementById('cfg-event-subtitle');
+      if (titleInput) {
+        const val = titleInput.value.trim() || 'SMARTSPASA';
+        appConfig.title = val;
+        document.getElementById('header-app-title').innerText = val;
+        document.title = `${val} - Enterprise Scoring System`;
+      }
+      if (subtitleInput) {
+        const subVal = subtitleInput.value.trim();
+        appConfig.subtitle = subVal;
+        document.getElementById('header-app-subtitle').innerText = subVal;
+      }
+    }
 
-        let currentRole = 'NONE'; 
-        let currentActiveLombaId = '';
-        let currentActiveJuriIndex = 1;
-        let currentActiveJuriName = '';
+    function saveIdentityConfig() {
+      updateHeaderTitleLive();
+      renderLogoAndKopDisplay();
+      saveAppState();
+      showToast('Identitas & Header Lomba berhasil disimpan!', 'success');
+      syncToGAS('saveConfig', { config: appConfig, logo: compressedLogoData, kop: compressedKopData });
+    }
 
-        // State Pagination & Debounce Search
-        let currentPageUmum = 1;
-        let searchDebounceTimer = null;
+    function savePinConfig() {
+      appConfig.pinAdmin = document.getElementById('cfg-pin-admin')?.value.trim() || '9999';
+      appConfig.pinPanitia = document.getElementById('cfg-pin-panitia')?.value.trim() || '1234';
+      appConfig.pinJuriDefault = document.getElementById('cfg-pin-juri-default')?.value.trim() || '1111';
+      gasWebAppUrl = document.getElementById('cfg-gas-web-url')?.value.trim() || '';
+      mainSpreadsheetLink = document.getElementById('cfg-spreadsheet-link')?.value.trim() || '';
 
-        window.onload = function() {
-            if (!GAS_WEB_APP_URL) {
-                const banner = document.getElementById('gasWarningBanner');
-                if (banner) banner.classList.remove('hidden');
-            }
+      saveAppState();
+      showToast('Link Spreadsheet & PIN Keamanan disimpan!', 'success');
+      syncToGAS('syncAllData', {});
+    }
 
-            restoreSession();
-            fetchDatabaseInitial();
-        };
+    // Leaderboard Renderer
+    function renderLeaderboard() {
+      const selectedKat = document.getElementById('filter-kategori-leaderboard')?.value || 'ALL';
+      const thContainer = document.getElementById('th-juri-headers');
+      
+      const activeJudgesHeader = appConfig.judges.map(j => `<th class="py-3.5 px-3 text-center">${j.name}</th>`).join('');
+      if (thContainer) thContainer.outerHTML = activeJudgesHeader || `<th class="py-3.5 px-3 text-center">Skor Juri</th>`;
 
-        // FETCH INITIAL DATABASE FROM GOOGLE APPS SCRIPT SERVER
-        async function fetchDatabaseInitial() {
-            showLoading(true, "Memuat data dari server Google Sheets...");
-            try {
-                if (!GAS_WEB_APP_URL) {
-                    showLoading(false);
-                    renderAppUi();
-                    return;
-                }
+      let filteredPeserta = databasePeserta;
+      if (selectedKat !== 'ALL') {
+        filteredPeserta = filteredPeserta.filter(p => p.jenisLomba === selectedKat);
+      }
 
-                // KEWAJIBAN FETCH REDIRECT (ANTI-CORS)
-                const res = await fetch(`${GAS_WEB_APP_URL}?action=getInitialData`, {
-                    method: 'GET',
-                    redirect: 'follow'
-                });
+      // Calculate Scores
+      const standings = filteredPeserta.map(p => {
+        let grandTotal = 0;
+        let judgeCountAssigned = 0;
+        let scoresPerJudge = {};
 
-                const data = await res.json();
-                if (data.status === 'success') {
-                    if (data.config) APP_CONFIG = { ...APP_CONFIG, ...data.config };
-                    LOMBA_LIST = data.lomba || [];
-                    PESERTA_LIST = data.peserta || [];
-                    NILAI_LIST = data.nilai || [];
-
-                    if (APP_CONFIG.logoBase64) {
-                        document.getElementById('appLogoImg').src = APP_CONFIG.logoBase64;
-                        document.getElementById('appLogoImg').classList.remove('hidden');
-                        document.getElementById('appLogoText').classList.add('hidden');
-                    }
-                }
-            } catch (err) {
-                console.error("Gagal fetch server:", err);
-                showToast("Gagal memuat server Google Sheets.", "danger");
-            } finally {
-                showLoading(false);
-                populateDropdowns();
-                renderAppUi();
-                toggleMainLoginRole();
-            }
-        }
-
-        // BACKEND POST API MUTATION HANDLER WITH SILENT RETRY
-        async function postToGAS(action, payload, retryCount = 0) {
-            if (!GAS_WEB_APP_URL) {
-                showToast("Mode Demo / URL belum diset.", "info");
-                return { status: 'success' };
-            }
-
-            showLoading(true, "Menyimpan ke Google Sheets...");
-            try {
-                const response = await fetch(GAS_WEB_APP_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({ action: action, payload: payload }),
-                    redirect: 'follow' // Mandat Anti-CORS GAS Redirect
-                });
-
-                const result = await response.json();
-                showLoading(false);
-                return result;
-            } catch (err) {
-                console.warn(`Retry attempt ${retryCount + 1}...`, err);
-                if (retryCount < 2) {
-                    return await postToGAS(action, payload, retryCount + 1);
-                }
-                showLoading(false);
-                showToast("Gagal terhubung ke Google Apps Script.", "danger");
-                return { status: 'error', message: err.toString() };
-            }
-        }
-
-        function restoreSession() {
-            const savedRole = sessionStorage.getItem('SMARTSPASA_ROLE');
-            if (savedRole && savedRole !== 'NONE') {
-                currentRole = savedRole;
-                currentActiveLombaId = sessionStorage.getItem('SMARTSPASA_LOMBA') || '';
-                currentActiveJuriIndex = parseInt(sessionStorage.getItem('SMARTSPASA_JURI_INDEX') || '1');
-                currentActiveJuriName = sessionStorage.getItem('SMARTSPASA_JURI_NAME') || '';
-            }
-        }
-
-        function saveSession(role, lombaId = '', juriIndex = 1, juriName = '') {
-            currentRole = role;
-            currentActiveLombaId = lombaId;
-            currentActiveJuriIndex = juriIndex;
-            currentActiveJuriName = juriName;
-            sessionStorage.setItem('SMARTSPASA_ROLE', role);
-            sessionStorage.setItem('SMARTSPASA_LOMBA', lombaId);
-            sessionStorage.setItem('SMARTSPASA_JURI_INDEX', juriIndex);
-            sessionStorage.setItem('SMARTSPASA_JURI_NAME', juriName);
-        }
-
-        function handleLogout() {
-            sessionStorage.clear();
-            currentRole = 'NONE';
-            renderAppUi();
-            showToast('Sesi berhasil keluar. Kembali ke portal utama.', 'info');
-        }
-
-        function toggleMainLoginRole() {
-            const roleEl = document.getElementById('mainLoginRole');
-            if (!roleEl) return;
-            const role = roleEl.value;
-
-            const wrapUmum = document.getElementById('mainWrapperUmum');
-            const wrapJuri = document.getElementById('mainWrapperJuri');
-            const wrapPanitia = document.getElementById('mainWrapperPanitia');
-            const wrapAdmin = document.getElementById('mainWrapperAdmin');
-
-            if (wrapUmum) wrapUmum.classList.add('hidden');
-            if (wrapJuri) wrapJuri.classList.add('hidden');
-            if (wrapPanitia) wrapPanitia.classList.add('hidden');
-            if (wrapAdmin) wrapAdmin.classList.add('hidden');
-
-            if (role === 'UMUM' && wrapUmum) wrapUmum.classList.remove('hidden');
-            if (role === 'JURI' && wrapJuri) wrapJuri.classList.remove('hidden');
-            if (role === 'PANITIA' && wrapPanitia) wrapPanitia.classList.remove('hidden');
-            if (role === 'ADMIN' && wrapAdmin) wrapAdmin.classList.remove('hidden');
-        }
-
-        function execMainLogin() {
-            const role = document.getElementById('mainLoginRole').value;
-
-            if (role === 'UMUM') {
-                saveSession('UMUM');
-                showToast('Membuka Akses Hasil Publik...', 'info');
-                renderAppUi();
-            } else if (role === 'ADMIN') {
-                const pin = document.getElementById('mainPinAdmin').value.trim();
-                if (pin === APP_CONFIG.pinAdmin) {
-                    saveSession('ADMIN');
-                    showToast('Login Super Admin Berhasil!', 'success');
-                    renderAppUi();
-                } else {
-                    showToast('PIN Master Super Admin Salah!', 'danger');
-                }
-            } else if (role === 'PANITIA') {
-                const pin = document.getElementById('mainPinPanitia').value.trim();
-                if (pin === APP_CONFIG.pinPanitia) {
-                    saveSession('PANITIA');
-                    showToast('Login Panitia Berhasil!', 'success');
-                    renderAppUi();
-                } else {
-                    showToast('PIN Panitia Salah!', 'danger');
-                }
-            } else if (role === 'JURI') {
-                const idLomba = document.getElementById('mainSelectLomba').value;
-                const pinInput = document.getElementById('mainPinJuri').value.trim();
-                const lomba = LOMBA_LIST.find(l => l.id === idLomba);
-
-                if (!lomba) {
-                    showToast('Cabang Lomba tidak ditemukan!', 'danger');
-                    return;
-                }
-
-                // EKSPLORASI DYNAMIC PIN MATRIX ({PIN}-J1, {PIN}-J2, dst)
-                let matchedJuriIndex = null;
-                const totalJuri = Number(lomba.jumlahJuri || 3);
-                const basePin = lomba.pinBase || lomba.pin || '1234';
-
-                for (let i = 1; i <= totalJuri; i++) {
-                    const expectedPin = `${basePin}-J${i}`;
-                    if (pinInput === expectedPin || pinInput === basePin) {
-                        matchedJuriIndex = i;
-                        break;
-                    }
-                }
-
-                if (matchedJuriIndex !== null) {
-                    saveSession('JURI', idLomba, matchedJuriIndex, `Juri ${matchedJuriIndex}`);
-                    showToast(`Login Juri Ke-${matchedJuriIndex} ${lomba.nama} Berhasil!`, 'success');
-                    renderAppUi();
-                } else {
-                    showToast(`PIN Juri Salah! Format wajib: ${basePin}-J1 s/d ${basePin}-J${totalJuri}`, 'danger');
-                }
-            }
-        }
-
-        function renderAppUi() {
-            document.getElementById('subEventStatus').innerText = `SMARTSPASA KE-${APP_CONFIG.edisi}`;
-            document.getElementById('bannerTitleUmum').innerText = `SMARTSPASA KE-${APP_CONFIG.edisi} ASSESSMENT`;
-            document.getElementById('adminEdisi').value = APP_CONFIG.edisi;
-            document.getElementById('adminKetua').value = APP_CONFIG.ketua;
-            document.getElementById('adminNipKetua').value = APP_CONFIG.nipKetua;
-            document.getElementById('adminPin').value = APP_CONFIG.pinAdmin;
-            document.getElementById('adminPinPanitia').value = APP_CONFIG.pinPanitia || '888999';
-            document.getElementById('adminModeRanking').value = APP_CONFIG.modeRanking || 'STRICT';
-
-            const btnLogout = document.getElementById('btnLogout');
-            const navTabs = document.getElementById('navTabs');
-            const tabLogin = document.getElementById('tabBtnLogin');
-            const tabUmum = document.getElementById('tabBtnUmum');
-            const tabJuri = document.getElementById('tabBtnJuri');
-            const tabAdmin = document.getElementById('tabBtnAdmin');
-            const badgeRole = document.getElementById('badgeActiveRole');
-            const labelRole = document.getElementById('roleLabelText');
-
-            if (currentRole === 'ADMIN') {
-                navTabs.classList.remove('hidden');
-                tabLogin.classList.remove('hidden');
-                tabUmum.classList.remove('hidden');
-                tabJuri.classList.remove('hidden');
-                tabAdmin.classList.remove('hidden');
-                btnLogout.classList.remove('hidden');
-                badgeRole.classList.remove('hidden');
-                labelRole.innerText = 'Super Admin';
-                switchTab('admin');
-            } else if (currentRole === 'PANITIA') {
-                navTabs.classList.remove('hidden');
-                tabLogin.classList.remove('hidden');
-                tabUmum.classList.remove('hidden');
-                tabJuri.classList.add('hidden');
-                tabAdmin.classList.remove('hidden'); // Panitia bisa akses impor & kelola peserta
-                btnLogout.classList.remove('hidden');
-                badgeRole.classList.remove('hidden');
-                labelRole.innerText = 'Panitia (Organizer)';
-                switchTab('admin');
-            } else if (currentRole === 'JURI') {
-                navTabs.classList.remove('hidden');
-                tabLogin.classList.add('hidden');
-                tabUmum.classList.remove('hidden');
-                tabJuri.classList.remove('hidden');
-                tabAdmin.classList.add('hidden');
-                btnLogout.classList.remove('hidden');
-                badgeRole.classList.remove('hidden');
-                labelRole.innerText = `Juri Ke-${currentActiveJuriIndex}`;
-                switchTab('juri');
-            } else if (currentRole === 'UMUM') {
-                navTabs.classList.add('hidden');
-                btnLogout.classList.remove('hidden');
-                badgeRole.classList.remove('hidden');
-                labelRole.innerText = 'Publik / Umum';
-                switchTab('umum');
+        appConfig.judges.forEach(j => {
+          if (j.jenisLomba === 'ALL' || j.jenisLomba === p.jenisLomba) {
+            judgeCountAssigned++;
+            const scObj = databaseNilai.find(n => n.pesertaId === p.id && n.juriId === j.id);
+            if (scObj) {
+              scoresPerJudge[j.id] = scObj.total;
+              grandTotal += scObj.total;
             } else {
-                navTabs.classList.add('hidden');
-                btnLogout.classList.add('hidden');
-                badgeRole.classList.add('hidden');
-                switchTab('login');
+              scoresPerJudge[j.id] = null;
             }
+          } else {
+            scoresPerJudge[j.id] = 'N/A';
+          }
+        });
 
-            populateDropdowns();
-            renderTabelUmum(1);
-            renderTabelAdminLomba();
-            if (currentRole === 'JURI') renderPenilaianJuri();
+        const avg = judgeCountAssigned > 0 ? (grandTotal / judgeCountAssigned) : 0;
+        return { peserta: p, grandTotal, average: avg, scoresPerJudge, judgeCountAssigned };
+      });
+
+      standings.sort((a, b) => b.grandTotal - a.grandTotal);
+
+      // Render Table Rows
+      const tbody = document.getElementById('tbody-leaderboard');
+      if (!tbody) return;
+
+      if (standings.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${5 + appConfig.judges.length + 3}" class="py-8 text-center text-slate-500 text-xs">Belum ada data peserta untuk kategori ini.</td></tr>`;
+      } else {
+        tbody.innerHTML = standings.map((item, idx) => {
+          const rank = idx + 1;
+          const rankBadge = rank === 1 ? '<span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-bold">🥇 1</span>' :
+                            rank === 2 ? '<span class="px-2 py-0.5 rounded-md bg-slate-400/20 text-slate-300 font-bold">🥈 2</span>' :
+                            rank === 3 ? '<span class="px-2 py-0.5 rounded-md bg-amber-700/20 text-amber-500 font-bold">🥉 3</span>' :
+                            `<span class="font-semibold text-slate-400">${rank}</span>`;
+
+          const judgeCells = appConfig.judges.map(j => {
+            const sc = item.scoresPerJudge[j.id];
+            if (sc === 'N/A') return `<td class="py-3 px-3 text-center text-slate-600 font-mono text-[11px]">N/A</td>`;
+            if (sc === null || sc === undefined) return `<td class="py-3 px-3 text-center text-slate-500 font-mono text-[11px]">-</td>`;
+            return `<td class="py-3 px-3 text-center font-bold text-indigo-400 font-mono text-xs">${sc}</td>`;
+          }).join('');
+
+          return `
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="py-3 px-4 text-center">${rankBadge}</td>
+              <td class="py-3 px-4 font-mono font-bold text-slate-300">${item.peserta.noPendaftaran}</td>
+              <td class="py-3 px-4 font-bold text-white">${item.peserta.namaLengkap}</td>
+              <td class="py-3 px-4 text-slate-400">${item.peserta.asalSekolah}</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-semibold text-[11px]">${item.peserta.jenisLomba}</span></td>
+              ${judgeCells}
+              <td class="py-3 px-4 text-center font-black text-emerald-400 text-sm font-mono">${item.grandTotal}</td>
+              <td class="py-3 px-4 text-center font-bold text-amber-400 text-xs font-mono">${item.average.toFixed(2)}</td>
+              <td class="py-3 px-4 text-center">
+                <button onclick="openDetailRekapModal('${item.peserta.id}')" class="bg-slate-800 hover:bg-slate-700 text-indigo-300 p-1.5 rounded-lg text-xs" title="Rincian Nilai">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Stats Updates
+      document.getElementById('stat-total-peserta').innerText = databasePeserta.length;
+      document.getElementById('stat-total-juri').innerText = appConfig.judges.length;
+      document.getElementById('stat-total-kategori').innerText = appConfig.categories.length;
+      
+      const finishedCount = standings.filter(s => {
+        let isDone = true;
+        appConfig.judges.forEach(j => {
+          if ((j.jenisLomba === 'ALL' || j.jenisLomba === s.peserta.jenisLomba) && (s.scoresPerJudge[j.id] === null || s.scoresPerJudge[j.id] === undefined)) isDone = false;
+        });
+        return isDone && s.judgeCountAssigned > 0;
+      }).length;
+
+      document.getElementById('stat-peserta-selesai').innerText = finishedCount;
+    }
+
+    // Detail Modal Rekap Penilaian
+    function openDetailRekapModal(pesertaId) {
+      const p = databasePeserta.find(item => item.id === pesertaId);
+      if (!p) return;
+
+      let rincianHtml = appConfig.judges.map(j => {
+        if (j.jenisLomba !== 'ALL' && j.jenisLomba !== p.jenisLomba) {
+          return `
+            <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800 opacity-50">
+              <span class="text-xs font-bold text-slate-500">${j.name} (N/A untuk Kategori ini)</span>
+            </div>
+          `;
         }
+        const scObj = databaseNilai.find(n => n.pesertaId === p.id && n.juriId === j.id);
+        let critList = j.criteria.map((c, idx) => {
+          const val = scObj && scObj.scores ? scObj.scores[idx] || 0 : 0;
+          return `<div class="flex justify-between text-xs py-1 border-b border-slate-800/40"><span class="text-slate-400">${c}</span><span class="font-mono font-bold text-indigo-300">${val}</span></div>`;
+        }).join('');
 
-        function switchTab(tab) {
-            if (tab === 'admin' && (currentRole !== 'ADMIN' && currentRole !== 'PANITIA')) return;
-            if (tab === 'juri' && (currentRole !== 'JURI' && currentRole !== 'ADMIN')) return;
+        return `
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+              <span class="text-xs font-bold text-amber-400">${j.name}</span>
+              <span class="text-xs font-mono font-black text-emerald-400">Total: ${scObj ? scObj.total : 0}</span>
+            </div>
+            ${critList}
+            ${scObj && scObj.comments ? `<p class="text-[11px] text-slate-400 italic pt-1">"${scObj.comments}"</p>` : ''}
+          </div>
+        `;
+      }).join('');
 
-            const pageHero = document.getElementById('pageLoginHero');
-            const pageUmum = document.getElementById('pageUmum');
-            const pageJuri = document.getElementById('pageJuri');
-            const pageAdmin = document.getElementById('pageAdmin');
+      const html = `
+        <div class="space-y-4">
+          <div>
+            <h3 class="text-base font-bold text-white">${p.namaLengkap} (${p.noPendaftaran})</h3>
+            <p class="text-xs text-slate-400">${p.asalSekolah} • <span class="text-indigo-400 font-semibold">${p.jenisLomba}</span></p>
+          </div>
+          <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+            ${rincianHtml}
+          </div>
+        </div>
+      `;
+      openModal(html);
+    }
 
-            pageHero.classList.add('hidden');
-            pageUmum.classList.add('hidden');
-            pageJuri.classList.add('hidden');
-            pageAdmin.classList.add('hidden');
+    // Judge Scoring Panel Functions
+    function populateJuriPesertaDropdown() {
+      const sel = document.getElementById('select-juri-peserta');
+      if (!sel) return;
 
-            const tabBtnLogin = document.getElementById('tabBtnLogin');
-            const tabBtnUmum = document.getElementById('tabBtnUmum');
-            const tabBtnJuri = document.getElementById('tabBtnJuri');
-            const tabBtnAdmin = document.getElementById('tabBtnAdmin');
+      const activeJuriObj = appConfig.judges.find(j => j.id === currentJudgeId);
+      const jCategory = activeJuriObj ? activeJuriObj.jenisLomba : 'ALL';
 
-            [tabBtnLogin, tabBtnUmum, tabBtnJuri, tabBtnAdmin].forEach(b => {
-                if(b) b.className = 'px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 whitespace-nowrap';
-            });
+      let availablePeserta = databasePeserta;
+      if (jCategory !== 'ALL') {
+        availablePeserta = availablePeserta.filter(p => p.jenisLomba === jCategory);
+      }
 
-            if (tab === 'login') {
-                pageHero.classList.remove('hidden');
-                if(tabBtnLogin) tabBtnLogin.className = 'px-4 py-2 text-xs font-bold text-blue-600 border-b-2 border-blue-600 whitespace-nowrap';
-            } else if (tab === 'umum') {
-                pageUmum.classList.remove('hidden');
-                if(tabBtnUmum) tabBtnUmum.className = 'px-4 py-2 text-xs font-bold text-blue-600 border-b-2 border-blue-600 whitespace-nowrap';
-            } else if (tab === 'juri') {
-                pageJuri.classList.remove('hidden');
-                if(tabBtnJuri) tabBtnJuri.className = 'px-4 py-2 text-xs font-bold text-blue-600 border-b-2 border-blue-600 whitespace-nowrap';
-            } else if (tab === 'admin') {
-                pageAdmin.classList.remove('hidden');
-                if(tabBtnAdmin) tabBtnAdmin.className = 'px-4 py-2 text-xs font-bold text-blue-600 border-b-2 border-blue-600 whitespace-nowrap';
+      if (availablePeserta.length === 0) {
+        sel.innerHTML = `<option value="">-- Tidak ada peserta untuk kategori ini --</option>`;
+        renderDynamicCriteriaInputs(null);
+        return;
+      }
+
+      sel.innerHTML = availablePeserta.map(p => `<option value="${p.id}">${p.noPendaftaran} - ${p.namaLengkap} (${p.asalSekolah})</option>`).join('');
+      onScorePesertaChange(sel.value);
+    }
+
+    function onScorePesertaChange(pesertaId) {
+      if (!pesertaId) {
+        renderDynamicCriteriaInputs(null);
+        return;
+      }
+      renderDynamicCriteriaInputs(pesertaId);
+    }
+
+    function renderDynamicCriteriaInputs(pesertaId) {
+      const container = document.getElementById('juri-criteria-inputs');
+      if (!container) return;
+
+      const jObj = appConfig.judges.find(j => j.id === currentJudgeId);
+      if (!jObj || !pesertaId) {
+        container.innerHTML = `<p class="text-xs text-slate-500 col-span-3 py-4 text-center">Silakan pilih peserta yang valid.</p>`;
+        return;
+      }
+
+      const existingScore = databaseNilai.find(n => n.pesertaId === pesertaId && n.juriId === currentJudgeId);
+      const scores = existingScore ? (existingScore.scores || []) : [];
+      const comment = existingScore ? (existingScore.comments || '') : '';
+
+      document.getElementById('juri-comment-input').value = comment;
+
+      container.innerHTML = jObj.criteria.map((crit, idx) => {
+        const val = scores[idx] !== undefined ? scores[idx] : 0;
+        return `
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+            <label class="block text-xs font-bold text-slate-300">${crit}</label>
+            <input type="number" min="0" max="100" data-crit-idx="${idx}" value="${val}" class="input-score-item w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-base font-bold text-emerald-400 font-mono text-center focus:outline-none focus:border-emerald-500">
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleScoreSubmit() {
+      const pesertaId = document.getElementById('select-juri-peserta')?.value;
+      if (!pesertaId) {
+        showToast('Pilih peserta terlebih dahulu!', 'error');
+        return;
+      }
+
+      const inputs = document.querySelectorAll('.input-score-item');
+      let scores = [];
+      let total = 0;
+
+      inputs.forEach(inp => {
+        let val = parseFloat(inp.value) || 0;
+        if (val < 0) val = 0;
+        if (val > 100) val = 100;
+        scores.push(val);
+        total += val;
+      });
+
+      const avg = scores.length > 0 ? (total / scores.length) : 0;
+      const comment = document.getElementById('juri-comment-input')?.value || '';
+
+      const scoreRecord = {
+        id: 'N_' + pesertaId + '_' + currentJudgeId,
+        pesertaId: pesertaId,
+        juriId: currentJudgeId,
+        scores: scores,
+        comments: comment,
+        total: total,
+        average: avg,
+        timestamp: new Date().toISOString()
+      };
+
+      const existingIdx = databaseNilai.findIndex(n => n.pesertaId === pesertaId && n.juriId === currentJudgeId);
+      if (existingIdx >= 0) {
+        databaseNilai[existingIdx] = scoreRecord;
+      } else {
+        databaseNilai.push(scoreRecord);
+      }
+
+      saveAppState();
+      showToast('Penilaian juri berhasil disimpan!', 'success');
+      syncToGAS('saveScore', scoreRecord);
+    }
+
+    // Plotting Matrix Table Renderer
+    function renderPlottingTable() {
+      const tbody = document.getElementById('tbody-plotting');
+      if (!tbody) return;
+
+      const selectedKat = document.getElementById('filter-kategori-plotting')?.value || 'ALL';
+      let filteredPeserta = databasePeserta;
+      if (selectedKat !== 'ALL') {
+        filteredPeserta = filteredPeserta.filter(p => p.jenisLomba === selectedKat);
+      }
+
+      const thContainer = document.getElementById('th-plotting-juri-headers');
+      const judgeHeaders = appConfig.judges.map(j => `<th class="py-3 px-3 text-center">${j.name}</th>`).join('');
+      if (thContainer) thContainer.outerHTML = judgeHeaders;
+
+      if (filteredPeserta.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${4 + appConfig.judges.length}" class="py-8 text-center text-slate-500 text-xs">Belum ada data peserta.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filteredPeserta.map(p => {
+        let doneCount = 0;
+        let totalAssigned = 0;
+
+        const statusCells = appConfig.judges.map(j => {
+          if (j.jenisLomba !== 'ALL' && j.jenisLomba !== p.jenisLomba) {
+            return `<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-600 font-mono text-[10px]">N/A</span></td>`;
+          }
+          totalAssigned++;
+          const sc = databaseNilai.find(n => n.pesertaId === p.id && n.juriId === j.id);
+          if (sc) {
+            doneCount++;
+            return `<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">✅ SELESAI (${sc.total})</span></td>`;
+          }
+          return `<td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-semibold text-[10px]">⏳ BELUM</span></td>`;
+        }).join('');
+
+        const pct = totalAssigned > 0 ? Math.round((doneCount / totalAssigned) * 100) : 0;
+        const progressBadge = pct === 100 ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 font-black text-xs">100% LENGKAP</span>` :
+                              `<span class="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 font-bold text-xs">${pct}% (${doneCount}/${totalAssigned})</span>`;
+
+        return `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="py-3 px-4 font-mono font-bold text-slate-300">${p.noPendaftaran}</td>
+            <td class="py-3 px-4 font-bold text-white">${p.namaLengkap}</td>
+            <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-semibold text-[11px]">${p.jenisLomba}</span></td>
+            ${statusCells}
+            <td class="py-3 px-4 text-center">${progressBadge}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Peserta Management Table
+    function renderPesertaTable() {
+      const tbody = document.getElementById('tbody-peserta');
+      if (!tbody) return;
+
+      if (databasePeserta.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500 text-xs">Belum ada peserta terdaftar. Silakan tambah atau impor Excel.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = databasePeserta.map(p => `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="py-3 px-4 font-mono text-slate-500">${p.id}</td>
+          <td class="py-3 px-4 font-mono font-bold text-white">${p.noPendaftaran}</td>
+          <td class="py-3 px-4 font-bold text-slate-200">${p.namaLengkap}</td>
+          <td class="py-3 px-4 text-slate-400">${p.asalSekolah}</td>
+          <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-semibold text-[11px]">${p.jenisLomba}</span></td>
+          <td class="py-3 px-4 text-center flex justify-center gap-2">
+            <button onclick="openModalEditPeserta('${p.id}')" class="bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 p-1.5 rounded-lg text-xs" title="Edit Peserta"><i class="fas fa-edit"></i></button>
+            <button onclick="deletePeserta('${p.id}')" class="bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 p-1.5 rounded-lg text-xs" title="Hapus Peserta"><i class="fas fa-trash-alt"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openModalAddPeserta() {
+      const katOptions = appConfig.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+      const html = `
+        <div class="space-y-4">
+          <h3 class="text-base font-bold text-white">Tambah Peserta Lomba Baru</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">No. Pendaftaran / Reg</label>
+              <input type="text" id="modal-peserta-noreg" placeholder="Misal: REG-001" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Nama Lengkap / Nama Tim</label>
+              <input type="text" id="modal-peserta-nama" placeholder="Misal: Tim Garuda" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Asal Sekolah / Instansi</label>
+              <input type="text" id="modal-peserta-sekolah" placeholder="Misal: SMPN 1 Jember" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Jenis Lomba (Kategori)</label>
+              <select id="modal-peserta-kategori" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-medium">
+                ${katOptions}
+              </select>
+            </div>
+          </div>
+          <button onclick="saveNewPeserta()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 rounded-xl transition">
+            Simpan Peserta
+          </button>
+        </div>
+      `;
+      openModal(html);
+    }
+
+    function saveNewPeserta() {
+      const noReg = document.getElementById('modal-peserta-noreg')?.value.trim();
+      const nama = document.getElementById('modal-peserta-nama')?.value.trim();
+      const sekolah = document.getElementById('modal-peserta-sekolah')?.value.trim();
+      const kat = document.getElementById('modal-peserta-kategori')?.value;
+
+      if (!noReg || !nama) {
+        showToast('Nomor Pendaftaran dan Nama wajib diisi!', 'error');
+        return;
+      }
+
+      const pObj = {
+        id: 'P_' + Date.now(),
+        noPendaftaran: noReg,
+        namaLengkap: nama,
+        asalSekolah: sekolah || '-',
+        jenisLomba: kat
+      };
+
+      databasePeserta.push(pObj);
+      saveAppState();
+      renderPesertaTable();
+      closeModal();
+      showToast('Peserta baru berhasil ditambahkan!', 'success');
+      syncToGAS('addPeserta', { pesertaData: pObj });
+    }
+
+    function openModalEditPeserta(id) {
+      const p = databasePeserta.find(item => item.id === id);
+      if (!p) return;
+
+      const katOptions = appConfig.categories.map(c => `<option value="${c}" ${c === p.jenisLomba ? 'selected' : ''}>${c}</option>`).join('');
+      const html = `
+        <div class="space-y-4">
+          <h3 class="text-base font-bold text-white">Edit Data Peserta</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">No. Pendaftaran</label>
+              <input type="text" id="edit-peserta-noreg" value="${p.noPendaftaran}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Nama Lengkap</label>
+              <input type="text" id="edit-peserta-nama" value="${p.namaLengkap}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Asal Sekolah</label>
+              <input type="text" id="edit-peserta-sekolah" value="${p.asalSekolah}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Jenis Lomba</label>
+              <select id="edit-peserta-kategori" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-medium">
+                ${katOptions}
+              </select>
+            </div>
+          </div>
+          <button onclick="submitEditPeserta('${p.id}')" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs py-2.5 rounded-xl transition">
+            Update Peserta
+          </button>
+        </div>
+      `;
+      openModal(html);
+    }
+
+    function submitEditPeserta(id) {
+      const idx = databasePeserta.findIndex(p => p.id === id);
+      if (idx < 0) return;
+
+      databasePeserta[idx].noPendaftaran = document.getElementById('edit-peserta-noreg').value.trim();
+      databasePeserta[idx].namaLengkap = document.getElementById('edit-peserta-nama').value.trim();
+      databasePeserta[idx].asalSekolah = document.getElementById('edit-peserta-sekolah').value.trim();
+      databasePeserta[idx].jenisLomba = document.getElementById('edit-peserta-kategori').value;
+
+      saveAppState();
+      renderPesertaTable();
+      closeModal();
+      showToast('Data peserta berhasil diubah!', 'success');
+      syncToGAS('syncAllData', {});
+    }
+
+    function deletePeserta(id) {
+      if (!confirm('Apakah Anda yakin ingin menghapus peserta ini?')) return;
+      databasePeserta = databasePeserta.filter(p => p.id !== id);
+      databaseNilai = databaseNilai.filter(n => n.pesertaId !== id);
+      saveAppState();
+      renderPesertaTable();
+      showToast('Peserta dihapus!', 'info');
+      syncToGAS('deletePeserta', { pesertaId: id });
+    }
+
+    // Dynamic Category Manager Functions
+    function renderKategoriList() {
+      const container = document.getElementById('kat-list-container');
+      if (!container) return;
+      container.innerHTML = appConfig.categories.map(c => `
+        <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-300">
+          <span>${c}</span>
+          <button onclick="deleteKategori('${c}')" class="text-rose-400 hover:text-rose-300 p-0.5"><i class="fas fa-times"></i></button>
+        </div>
+      `).join('');
+    }
+
+    function renderKategoriDropdowns() {
+      const options = `<option value="ALL">Semua Jenis Lomba</option>` + appConfig.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+      if (document.getElementById('filter-kategori-leaderboard')) document.getElementById('filter-kategori-leaderboard').innerHTML = options;
+      if (document.getElementById('filter-kategori-plotting')) document.getElementById('filter-kategori-plotting').innerHTML = options;
+    }
+
+    function addNewKategori() {
+      const val = document.getElementById('new-kat-name')?.value.trim();
+      if (!val) {
+        showToast('Masukkan nama jenis lomba!', 'error');
+        return;
+      }
+      if (appConfig.categories.includes(val)) {
+        showToast('Jenis lomba sudah ada!', 'error');
+        return;
+      }
+      appConfig.categories.push(val);
+      document.getElementById('new-kat-name').value = '';
+      saveAppState();
+      renderKategoriList();
+      renderKategoriDropdowns();
+      showToast('Jenis lomba baru ditambahkan!', 'success');
+      syncToGAS('saveConfig', { config: appConfig });
+    }
+
+    function deleteKategori(catName) {
+      if (appConfig.categories.length <= 1) {
+        showToast('Minimal harus ada 1 jenis lomba!', 'error');
+        return;
+      }
+      appConfig.categories = appConfig.categories.filter(c => c !== catName);
+      saveAppState();
+      renderKategoriList();
+      renderKategoriDropdowns();
+      showToast('Jenis lomba dihapus!', 'info');
+      syncToGAS('saveConfig', { config: appConfig });
+    }
+
+    // Dynamic Juri Management
+    function renderDynamicJuriConfigList() {
+      const container = document.getElementById('dynamic-juri-config-list');
+      if (!container) return;
+
+      container.innerHTML = appConfig.judges.map(j => `
+        <div class="flex items-center justify-between p-3 bg-slate-900 border border-slate-800 rounded-xl text-xs">
+          <div>
+            <span class="font-bold text-white">${j.name}</span>
+            <span class="ml-2 text-[11px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-medium">${j.jenisLomba}</span>
+            <p class="text-[11px] text-slate-400 mt-0.5">${j.criteria.length} Sub-kriteria penilaian</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openModalEditJudge('${j.id}')" class="bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 p-1.5 rounded-lg text-xs" title="Edit Juri"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteJuri('${j.id}')" class="bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 p-1.5 rounded-lg text-xs" title="Hapus Juri"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openModalAddJudge() {
+      const katOptions = `<option value="ALL">Semua Jenis Lomba (ALL)</option>` + appConfig.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+      const html = `
+        <div class="space-y-4">
+          <h3 class="text-base font-bold text-white">Tambah Juri Baru</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Nama Juri / Penilai</label>
+              <input type="text" id="add-juri-name" placeholder="Misal: Juri 4 - Formasi & Gerak" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Tugas Jenis Lomba / Kategori</label>
+              <select id="add-juri-kategori" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-medium">
+                ${katOptions}
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">PIN Akses Juri</label>
+              <input type="text" id="add-juri-pin" value="1111" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Sub-kriteria Penilaian (Pisahkan dengan Koma)</label>
+              <input type="text" id="add-juri-criteria" placeholder="PBB Dasar, Variasi, Kostum" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+          </div>
+          <button onclick="saveNewJudge()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 rounded-xl transition">
+            Simpan Juri
+          </button>
+        </div>
+      `;
+      openModal(html);
+    }
+
+    function saveNewJudge() {
+      const name = document.getElementById('add-juri-name')?.value.trim();
+      const kat = document.getElementById('add-juri-kategori')?.value;
+      const pin = document.getElementById('add-juri-pin')?.value.trim() || '1111';
+      const critStr = document.getElementById('add-juri-criteria')?.value.trim();
+
+      if (!name) {
+        showToast('Nama juri wajib diisi!', 'error');
+        return;
+      }
+
+      const critArray = critStr ? critStr.split(',').map(s => s.trim() + ' (0-100)') : ["Kriteria 1 (0-100)", "Kriteria 2 (0-100)"];
+      const newId = 'JURI' + (appConfig.judges.length + 1);
+
+      const jObj = {
+        id: newId,
+        name: name,
+        jenisLomba: kat,
+        pin: pin,
+        criteria: critArray
+      };
+
+      appConfig.judges.push(jObj);
+      saveAppState();
+      renderDynamicJuriConfigList();
+      updateActiveJudgeDisplay();
+      closeModal();
+      showToast('Juri baru berhasil ditambahkan!', 'success');
+      syncToGAS('addJuri', { juriData: jObj });
+    }
+
+    function openModalEditJudge(id) {
+      const j = appConfig.judges.find(item => item.id === id);
+      if (!j) return;
+
+      const katOptions = `<option value="ALL" ${j.jenisLomba === 'ALL' ? 'selected' : ''}>Semua Jenis Lomba (ALL)</option>` + appConfig.categories.map(c => `<option value="${c}" ${c === j.jenisLomba ? 'selected' : ''}>${c}</option>`).join('');
+      const critStr = j.criteria.map(c => c.replace(/\s*\(0-100\)/g, '')).join(', ');
+
+      const html = `
+        <div class="space-y-4">
+          <h3 class="text-base font-bold text-white">Edit Konfigurasi Juri</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Nama Juri</label>
+              <input type="text" id="edit-juri-name" value="${j.name}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Tugas Jenis Lomba</label>
+              <select id="edit-juri-kategori" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-medium">
+                ${katOptions}
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">PIN Akses Juri</label>
+              <input type="text" id="edit-juri-pin" value="${j.pin}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-1">Sub-kriteria Penilaian</label>
+              <input type="text" id="edit-juri-criteria" value="${critStr}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+          </div>
+          <button onclick="submitEditJudge('${j.id}')" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs py-2.5 rounded-xl transition">
+            Update Juri
+          </button>
+        </div>
+      `;
+      openModal(html);
+    }
+
+    function submitEditJudge(id) {
+      const idx = appConfig.judges.findIndex(j => j.id === id);
+      if (idx < 0) return;
+
+      const name = document.getElementById('edit-juri-name').value.trim();
+      const kat = document.getElementById('edit-juri-kategori').value;
+      const pin = document.getElementById('edit-juri-pin').value.trim();
+      const critStr = document.getElementById('edit-juri-criteria').value.trim();
+
+      const critArray = critStr ? critStr.split(',').map(s => s.trim() + ' (0-100)') : appConfig.judges[idx].criteria;
+
+      appConfig.judges[idx].name = name;
+      appConfig.judges[idx].jenisLomba = kat;
+      appConfig.judges[idx].pin = pin;
+      appConfig.judges[idx].criteria = critArray;
+
+      saveAppState();
+      renderDynamicJuriConfigList();
+      updateActiveJudgeDisplay();
+      closeModal();
+      showToast('Konfigurasi juri berhasil diubah!', 'success');
+      syncToGAS('updateJuri', { juriData: appConfig.judges[idx] });
+    }
+
+    function deleteJuri(id) {
+      if (appConfig.judges.length <= 1) {
+        showToast('Minimal harus ada 1 juri bertugas!', 'error');
+        return;
+      }
+      if (!confirm('Apakah Anda yakin ingin menghapus juri ini?')) return;
+      appConfig.judges = appConfig.judges.filter(j => j.id !== id);
+      databaseNilai = databaseNilai.filter(n => n.juriId !== id);
+      saveAppState();
+      renderDynamicJuriConfigList();
+      updateActiveJudgeDisplay();
+      showToast('Juri dihapus!', 'info');
+      syncToGAS('deleteJuri', { juriId: id });
+    }
+
+    // Excel Importer & Template Generator
+    function downloadExcelTemplate() {
+      const wb = XLSX.utils.book_new();
+      const sampleData = [
+        { NoPendaftaran: 'REG-001', NamaLengkap: 'Tim Garuda Utama', AsalSekolah: 'SMPN 1 Jember', JenisLomba: 'SMP/MTs' },
+        { NoPendaftaran: 'REG-002', NamaLengkap: 'Tim Satria Perkasa', AsalSekolah: 'SMKN 2 Jember', JenisLomba: 'SMA/SMK' }
+      ];
+      const ws = XLSX.utils.json_to_sheet(sampleData);
+      XLSX.utils.book_append_sheet(wb, ws, 'PESERTA');
+      XLSX.writeFile(wb, 'Template_Impor_Peserta_SMARTSPASA.xlsx');
+    }
+
+    function handleExcelImport(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.SheetNames[0];
+          const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+
+          let added = 0;
+          rows.forEach(r => {
+            const noReg = r.NoPendaftaran || r.noPendaftaran || r['No Pendaftaran'] || r['NO'];
+            const nama = r.NamaLengkap || r.namaLengkap || r['Nama Lengkap'] || r['NAMA'];
+            const sekolah = r.AsalSekolah || r.asalSekolah || r['Asal Sekolah'] || r['SEKOLAH'];
+            const kat = r.JenisLomba || r.jenisLomba || r['Jenis Lomba'] || r['KATEGORI'] || appConfig.categories[0];
+
+            if (noReg && nama) {
+              databasePeserta.push({
+                id: 'P_' + Date.now() + Math.floor(Math.random() * 1000),
+                noPendaftaran: String(noReg).trim(),
+                namaLengkap: String(nama).trim(),
+                asalSekolah: sekolah ? String(sekolah).trim() : '-',
+                jenisLomba: String(kat).trim()
+              });
+              added++;
             }
+          });
+
+          saveAppState();
+          renderPesertaTable();
+          showToast(`Berhasil mengimpor ${added} peserta dari Excel!`, 'success');
+          syncToGAS('syncAllData', {});
+        } catch (err) {
+          showToast('Gagal membaca berkas Excel: ' + err.message, 'error');
         }
-
-        function populateDropdowns() {
-            const mainSel = document.getElementById('mainSelectLomba');
-            const umuSel = document.getElementById('selectFilterLombaUmum');
-            const cetakSel = document.getElementById('selectLombaCetakAdmin');
-
-            if (mainSel) {
-                mainSel.innerHTML = LOMBA_LIST.map(l => `<option value="${l.id}">${l.nama} (${l.jumlahJuri || 3} Juri)</option>`).join('');
-            }
-            if (umuSel) {
-                umuSel.innerHTML = `<option value="ALL">Semua Cabang Lomba</option>` + 
-                    LOMBA_LIST.map(l => `<option value="${l.id}">${l.nama}</option>`).join('');
-            }
-            if (cetakSel) {
-                cetakSel.innerHTML = LOMBA_LIST.map(l => `<option value="${l.id}">${l.nama}</option>`).join('');
-            }
-        }
-
-        function handleSearchDebounce() {
-            clearTimeout(searchDebounceTimer);
-            searchDebounceTimer = setTimeout(() => {
-                renderTabelUmum(1);
-            }, 300);
-        }
-
-        // PERHITUNGAN N-JURI DINAMIS & MODE RANKING STRICT vs LIVE
-        function renderTabelUmum(page = 1) {
-            currentPageUmum = page;
-            const filter = document.getElementById('selectFilterLombaUmum').value;
-            const query = document.getElementById('inputSearchNo').value.trim().toLowerCase();
-            const pageSize = parseInt(document.getElementById('pageSizeUmum').value);
-            const tbody = document.getElementById('tabelHasilUmum');
-            tbody.innerHTML = '';
-
-            let list = PESERTA_LIST;
-            if (filter !== 'ALL') list = list.filter(p => p.idLomba === filter);
-            if (query) list = list.filter(p => p.no.toLowerCase().includes(query) || p.nama.toLowerCase().includes(query));
-
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 font-medium">Belum ada data peserta.</td></tr>`;
-                document.getElementById('pageInfoUmum').innerText = `Halaman 0 dari 0`;
-                return;
-            }
-
-            const totalPages = Math.ceil(list.length / pageSize);
-            if (currentPageUmum > totalPages) currentPageUmum = totalPages;
-
-            const startIndex = (currentPageUmum - 1) * pageSize;
-            const paginatedData = list.slice(startIndex, startIndex + pageSize);
-
-            paginatedData.forEach(p => {
-                const lomba = LOMBA_LIST.find(l => l.id === p.idLomba);
-                const totalTargetJuri = Number(lomba ? (lomba.jumlahJuri || 3) : 3);
-
-                const nil = NILAI_LIST.filter(n => n.no === p.no && n.idLomba === p.idLomba);
-                const countJuriDinilai = nil.length;
-
-                let scoreText = 'Belum Dinilai';
-                let statusBadge = '<span class="bg-slate-100 text-slate-600 text-[10px] px-2.5 py-0.5 rounded-full font-semibold">Belum Dinilai</span>';
-
-                if (countJuriDinilai > 0) {
-                    const totalScoreSum = nil.reduce((acc, curr) => acc + Number(curr.nilaiAkhir || 0), 0);
-                    const meanScore = (totalScoreSum / countJuriDinilai).toFixed(1);
-
-                    const isComplete = (countJuriDinilai >= totalTargetJuri);
-                    const isStrict = (APP_CONFIG.modeRanking === 'STRICT');
-
-                    if (isStrict) {
-                        if (isComplete) {
-                            scoreText = meanScore;
-                            statusBadge = `<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Lengkap (${countJuriDinilai}/${totalTargetJuri} Juri)</span>`;
-                        } else {
-                            scoreText = '***';
-                            statusBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Berlangsung (${countJuriDinilai}/${totalTargetJuri} Juri)</span>`;
-                        }
-                    } else {
-                        // LIVE AVERAGE MODE
-                        scoreText = meanScore;
-                        statusBadge = `<span class="bg-blue-100 text-blue-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Rata-Rata Sementara (${countJuriDinilai}/${totalTargetJuri} Juri)</span>`;
-                    }
-                }
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="p-2.5 font-bold text-slate-700">${p.no}</td>
-                        <td class="p-2.5 font-semibold text-slate-900">${p.nama}</td>
-                        <td class="p-2.5 text-slate-600">${p.sekolah}</td>
-                        <td class="p-2.5 text-slate-600">${p.namaLomba || (lomba ? lomba.nama : '')}</td>
-                        <td class="p-2.5 text-center font-bold text-blue-600 text-sm">${scoreText}</td>
-                        <td class="p-2.5 text-center">${statusBadge}</td>
-                    </tr>
-                `;
-            });
-
-            document.getElementById('pageInfoUmum').innerText = `Halaman ${currentPageUmum} dari ${totalPages}`;
-            document.getElementById('btnPrevUmum').disabled = (currentPageUmum === 1);
-            document.getElementById('btnNextUmum').disabled = (currentPageUmum === totalPages);
-        }
-
-        function changePageUmum(dir) {
-            renderTabelUmum(currentPageUmum + dir);
-        }
-
-        // LEMBAR PENILAIAN JURI & INDIKATOR DINAMIS
-        function renderPenilaianJuri() {
-            const lomba = LOMBA_LIST.find(l => l.id === currentActiveLombaId);
-            if (!lomba) return;
-
-            document.getElementById('juriLombaActiveName').value = lomba.nama;
-            document.getElementById('juriIndexActive').value = `Juri ${currentActiveJuriIndex}`;
-            document.getElementById('juriTotalCountActive').value = `${lomba.jumlahJuri || 3} Juri`;
-            document.getElementById('inputNamaJuriActive').value = currentActiveJuriName || `Juri ${currentActiveJuriIndex}`;
-
-            const containerIndikator = document.getElementById('containerIndikator');
-            containerIndikator.innerHTML = '';
-            let totalBobot = 0;
-
-            const indikatorArr = lomba.indikator || [{nama: 'Kriteria Utama', bobot: 100}];
-            indikatorArr.forEach((ind) => {
-                totalBobot += Number(ind.bobot);
-                containerIndikator.innerHTML += `
-                    <div class="flex items-center gap-2">
-                        <input type="text" value="${ind.nama}" class="ind-nama flex-grow px-2.5 py-1 text-xs border rounded font-medium" placeholder="Nama Indikator">
-                        <input type="number" value="${ind.bobot}" onchange="recalcBobot()" class="ind-bobot w-20 px-2.5 py-1 text-xs border rounded text-center font-bold" placeholder="%">
-                        <button onclick="this.parentElement.remove(); recalcBobot();" class="text-red-500 font-bold px-2">&times;</button>
-                    </div>
-                `;
-            });
-
-            document.getElementById('textTotalBobot').innerText = totalBobot + '%';
-
-            const tbody = document.getElementById('tabelPenilaianJuri');
-            tbody.innerHTML = '';
-
-            const listPeserta = PESERTA_LIST.filter(p => p.idLomba === currentActiveLombaId);
-            if (listPeserta.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-medium">Belum ada peserta terdaftar. Tambahkan via Excel / OTS.</td></tr>`;
-                return;
-            }
-
-            listPeserta.forEach(p => {
-                // NILAI TERPISAH PER NO REG DAN JURI INDEX
-                const existingNilai = NILAI_LIST.find(n => n.no === p.no && n.idLomba === currentActiveLombaId && Number(n.juriIndex) === Number(currentActiveJuriIndex)) || { rincian: {}, nilaiAkhir: 0, catatan: '' };
-
-                let inputIndikatorHTML = '<div class="space-y-1">';
-                indikatorArr.forEach(ind => {
-                    const val = (existingNilai.rincian && existingNilai.rincian[ind.nama]) ? existingNilai.rincian[ind.nama] : 0;
-                    inputIndikatorHTML += `
-                        <div class="flex items-center justify-between gap-1">
-                            <span class="text-[10px] text-slate-500 font-semibold">${ind.nama} (${ind.bobot}%):</span>
-                            <input type="number" min="0" max="100" value="${val}" data-peserta="${p.no}" data-indikator="${ind.nama}" data-bobot="${ind.bobot}" class="input-skor w-16 px-1.5 py-0.5 text-xs border border-slate-300 rounded text-center font-bold text-slate-800">
-                        </div>
-                    `;
-                });
-                inputIndikatorHTML += '</div>';
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="p-2.5 font-bold text-slate-700">${p.no}</td>
-                        <td class="p-2.5 font-semibold text-slate-900">${p.nama}</td>
-                        <td class="p-2.5 text-slate-600">${p.sekolah}</td>
-                        <td class="p-2.5">${inputIndikatorHTML}</td>
-                        <td class="p-2.5 text-center font-bold text-blue-600 text-sm" id="score_${p.no}">${existingNilai.nilaiAkhir || 0}</td>
-                        <td class="p-2.5"><input type="text" id="catatan_${p.no}" value="${existingNilai.catatan || ''}" placeholder="Catatan juri..." class="w-full px-2 py-1 text-xs border rounded font-medium"></td>
-                        <td class="p-2.5 text-center">
-                            <button onclick="simpanNilaiPesertaSingle('${p.no}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold transition">Simpan</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function tambahRowIndikator() {
-            const container = document.getElementById('containerIndikator');
-            container.innerHTML += `
-                <div class="flex items-center gap-2">
-                    <input type="text" value="" class="ind-nama flex-grow px-2.5 py-1 text-xs border rounded font-medium" placeholder="Nama Indikator Baru">
-                    <input type="number" value="0" onchange="recalcBobot()" class="ind-bobot w-20 px-2.5 py-1 text-xs border rounded text-center font-bold" placeholder="%">
-                    <button onclick="this.parentElement.remove(); recalcBobot();" class="text-red-500 font-bold px-2">&times;</button>
-                </div>
-            `;
-        }
-
-        function recalcBobot() {
-            const bobotEls = document.querySelectorAll('.ind-bobot');
-            let sum = 0;
-            bobotEls.forEach(el => sum += Number(el.value || 0));
-            document.getElementById('textTotalBobot').innerText = sum + '%';
-        }
-
-        async function simpanIndikatorLomba() {
-            const bobotEls = document.querySelectorAll('.ind-bobot');
-            let sum = 0;
-            bobotEls.forEach(el => sum += Number(el.value || 0));
-
-            if (sum !== 100) {
-                showToast(`Total bobot indikator WAJIB 100%! Saat ini: ${sum}%`, 'danger');
-                return;
-            }
-
-            const namaEls = document.querySelectorAll('.ind-nama');
-            const newIndikator = [];
-
-            namaEls.forEach((el, idx) => {
-                if (el.value.trim()) {
-                    newIndikator.push({
-                        nama: el.value.trim(),
-                        bobot: Number(bobotEls[idx].value || 0)
-                    });
-                }
-            });
-
-            const lomba = LOMBA_LIST.find(l => l.id === currentActiveLombaId);
-            if (lomba) {
-                lomba.indikator = newIndikator;
-                const res = await postToGAS('saveIndikator', { idLomba: currentActiveLombaId, indikator: newIndikator });
-                if (res.status === 'success') {
-                    showToast('Struktur Indikator Lomba Tersimpan di Google Sheets!', 'success');
-                    renderPenilaianJuri();
-                }
-            }
-        }
-
-        async function simpanNilaiPesertaSingle(noReg) {
-            const juriNamaInput = document.getElementById('inputNamaJuriActive').value.trim() || `Juri ${currentActiveJuriIndex}`;
-            const inputs = document.querySelectorAll(`input[data-peserta="${noReg}"]`);
-            let totalNilai = 0;
-            let rincian = {};
-
-            inputs.forEach(inp => {
-                const indNama = inp.getAttribute('data-indikator');
-                const bobot = Number(inp.getAttribute('data-bobot'));
-                const skor = Number(inp.value || 0);
-
-                rincian[indNama] = skor;
-                totalNilai += (skor * (bobot / 100));
-            });
-
-            const catatan = document.getElementById(`catatan_${noReg}`).value.trim();
-            const payload = {
-                no: noReg,
-                idLomba: currentActiveLombaId,
-                juriIndex: currentActiveJuriIndex,
-                juriNama: juriNamaInput,
-                rincian: rincian,
-                nilaiAkhir: Number(totalNilai.toFixed(1)),
-                catatan: catatan
-            };
-
-            const idx = NILAI_LIST.findIndex(n => n.no === noReg && n.idLomba === currentActiveLombaId && Number(n.juriIndex) === Number(currentActiveJuriIndex));
-            if (idx >= 0) {
-                NILAI_LIST[idx] = payload;
-            } else {
-                NILAI_LIST.push(payload);
-            }
-
-            document.getElementById(`score_${noReg}`).innerText = totalNilai.toFixed(1);
-
-            const res = await postToGAS('saveScore', payload);
-            if (res.status === 'success') {
-                showToast(`Nilai Juri Ke-${currentActiveJuriIndex} (${noReg}) Tersimpan!`, 'success');
-                renderTabelUmum(1);
-            }
-        }
-
-        function openModalTambahPesertaJuri() {
-            document.getElementById('modalTambahPeserta').classList.remove('hidden');
-            document.getElementById('modalTambahPeserta').classList.add('flex');
-        }
-
-        function closeModalTambahPeserta() {
-            document.getElementById('modalTambahPeserta').classList.add('hidden');
-            document.getElementById('modalTambahPeserta').classList.remove('flex');
-        }
-
-        async function simpanPesertaOTS() {
-            const no = document.getElementById('otsNoReg').value.trim();
-            const nama = document.getElementById('otsNama').value.trim();
-            const sekolah = document.getElementById('otsSekolah').value.trim();
-            const lomba = LOMBA_LIST.find(l => l.id === currentActiveLombaId);
-
-            if (!no || !nama || !sekolah) {
-                showToast('Seluruh field data peserta wajib diisi!', 'danger');
-                return;
-            }
-
-            const newPeserta = {
-                no: no,
-                nama: nama,
-                sekolah: sekolah,
-                idLomba: currentActiveLombaId,
-                namaLomba: lomba ? lomba.nama : 'Cabang Lomba'
-            };
-
-            PESERTA_LIST.push(newPeserta);
-
-            const res = await postToGAS('addPeserta', newPeserta);
-            if (res.status === 'success') {
-                showToast(`Peserta OTS ${nama} berhasil disimpan ke Google Sheets!`, 'success');
-                closeModalTambahPeserta();
-                renderPenilaianJuri();
-                renderTabelUmum(1);
-            }
-        }
-
-        // PENGATURAN SUPER ADMIN & OTORISASI LOMBA
-        function renderTabelAdminLomba() {
-            const tbody = document.getElementById('tabelAdminLomba');
-            tbody.innerHTML = '';
-
-            LOMBA_LIST.forEach(l => {
-                const statusBadge = l.ditetapkan 
-                    ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Sah / Dipublikasikan</span>`
-                    : `<span class="bg-amber-100 text-amber-800 text-[10px] px-2.5 py-0.5 rounded-full font-bold">Draft / Belum Final</span>`;
-
-                const basePin = l.pinBase || l.pin || '1234';
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="p-2.5 font-bold text-slate-700">${l.id}</td>
-                        <td class="p-2.5 font-semibold text-slate-900">${l.nama}</td>
-                        <td class="p-2.5 text-center font-bold text-blue-700 bg-blue-50/50">${l.jumlahJuri || 3} Juri</td>
-                        <td class="p-2.5 font-mono text-xs font-bold text-slate-700">${basePin}-J[1..N]</td>
-                        <td class="p-2.5">${statusBadge}</td>
-                        <td class="p-2.5 text-center">
-                            <button onclick="togglePenetapanLomba('${l.id}')" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1 rounded text-[10px] font-bold transition">
-                                ${l.ditetapkan ? 'Batalkan Otorisasi' : 'Sahkan & Tetapkan Hasil'}
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        async function togglePenetapanLomba(idLomba) {
-            const l = LOMBA_LIST.find(item => item.id === idLomba);
-            if (l) {
-                l.ditetapkan = !l.ditetapkan;
-                const res = await postToGAS('toggleOtorisasi', { idLomba: idLomba, ditetapkan: l.ditetapkan });
-                if (res.status === 'success') {
-                    showToast(`Status penetapan ${l.nama} diperbarui di server!`, 'info');
-                    renderTabelAdminLomba();
-                    renderTabelUmum(1);
-                }
-            }
-        }
-
-        function openModalTambahLomba() {
-            document.getElementById('modalTambahLomba').classList.remove('hidden');
-            document.getElementById('modalTambahLomba').classList.add('flex');
-        }
-
-        function closeModalTambahLomba() {
-            document.getElementById('modalTambahLomba').classList.add('hidden');
-            document.getElementById('modalTambahLomba').classList.remove('flex');
-        }
-
-        async function simpanLombaBaruAdmin() {
-            const nama = document.getElementById('adminNewNamaLomba').value.trim();
-            const jumlahJuri = parseInt(document.getElementById('adminNewJumlahJuri').value) || 3;
-            const pinBase = document.getElementById('adminNewPinJuri').value.trim();
-
-            if (!nama || !pinBase) {
-                showToast('Nama Lomba dan Base PIN wajib diisi!', 'danger');
-                return;
-            }
-
-            const newId = `LMB-00${LOMBA_LIST.length + 1}`;
-            const newLombaObj = {
-                id: newId,
-                nama: nama,
-                jumlahJuri: jumlahJuri,
-                pinBase: pinBase,
-                ditetapkan: false,
-                indikator: [{nama: 'Kriteria Utama', bobot: 100}]
-            };
-
-            LOMBA_LIST.push(newLombaObj);
-
-            const res = await postToGAS('addLomba', newLombaObj);
-            if (res.status === 'success') {
-                showToast(`Cabang Lomba ${nama} (${jumlahJuri} Juri) tersimpan!`, 'success');
-                closeModalTambahLomba();
-                populateDropdowns();
-                renderTabelAdminLomba();
-            }
-        }
-
-        async function simpanPengaturanEvent() {
-            APP_CONFIG.edisi = document.getElementById('adminEdisi').value.trim();
-            APP_CONFIG.ketua = document.getElementById('adminKetua').value.trim();
-            APP_CONFIG.nipKetua = document.getElementById('adminNipKetua').value.trim();
-            APP_CONFIG.pinAdmin = document.getElementById('adminPin').value.trim();
-            APP_CONFIG.pinPanitia = document.getElementById('adminPinPanitia').value.trim();
-            APP_CONFIG.modeRanking = document.getElementById('adminModeRanking').value;
-
-            const res = await postToGAS('saveConfig', APP_CONFIG);
-            if (res.status === 'success') {
-                showToast('Identitas & Pengaturan Mode Ranking Tersimpan!', 'success');
-                renderAppUi();
-            }
-        }
-
-        // KOMPRESI GAMBAR KLIEN (HTML5 CANVAS MAX 800PX, JPEG 0.7)
-        function previewCompressImage(input, type) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = async function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800;
-                    let width = img.width;
-                    let height = img.height;
-
-                    if (width > MAX_WIDTH) {
-                        height = Math.round((height * MAX_WIDTH) / width);
-                        width = MAX_WIDTH;
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-                    if (type === 'logo') {
-                        APP_CONFIG.logoBase64 = compressedBase64;
-                        document.getElementById('previewLogoImg').src = compressedBase64;
-                        document.getElementById('previewLogoImg').classList.remove('hidden');
-                        document.getElementById('appLogoImg').src = compressedBase64;
-                        document.getElementById('appLogoImg').classList.remove('hidden');
-                        document.getElementById('appLogoText').classList.add('hidden');
-                    } else {
-                        APP_CONFIG.kopBase64 = compressedBase64;
-                        document.getElementById('previewKopImg').src = compressedBase64;
-                        document.getElementById('previewKopImg').classList.remove('hidden');
-                    }
-
-                    const res = await postToGAS('saveConfigMedia', { type: type, base64: compressedBase64 });
-                    if (res.status === 'success') {
-                        showToast(`Gambar ${type} dikompresi & tersimpan di sel database!`, 'success');
-                    }
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // EXCEL IMPOR & TEMPLATE CLIENT-SIDE
-        function downloadExcelTemplate() {
-            const data = [
-                { "Nomor Pendaftaran": "SMP-2026-001", "Nama Lengkap": "Ahmad Rizky", "Asal Sekolah": "SMPN 1 Bondowoso", "Jenis Lomba": "Lomba Baca Puisi" }
-            ];
-
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template_Peserta");
-            XLSX.writeFile(wb, "Template_Impor_Peserta_SMARTSPASA.xlsx");
-            showToast('Template Excel berhasil diunduh.', 'info');
-        }
-
-        function handleImportExcel(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const json = XLSX.utils.sheet_to_json(worksheet);
-
-                const batchPeserta = [];
-
-                json.forEach(row => {
-                    const no = row["Nomor Pendaftaran"] || row["no"];
-                    const nama = row["Nama Lengkap"] || row["nama"];
-                    const sekolah = row["Asal Sekolah"] || row["sekolah"];
-                    const namaLomba = row["Jenis Lomba"] || row["namaLomba"];
-
-                    if (no && nama) {
-                        const targetLomba = LOMBA_LIST.find(l => l.nama.toLowerCase() === (namaLomba || '').toLowerCase()) || LOMBA_LIST[0];
-                        const item = {
-                            no: String(no),
-                            nama: String(nama),
-                            sekolah: String(sekolah || 'SMP'),
-                            idLomba: targetLomba ? targetLomba.id : '',
-                            namaLomba: targetLomba ? targetLomba.nama : ''
-                        };
-                        PESERTA_LIST.push(item);
-                        batchPeserta.push(item);
-                    }
-                });
-
-                const res = await postToGAS('importBatchPeserta', batchPeserta);
-                if (res.status === 'success') {
-                    showToast(`Impor Berhasil! ${batchPeserta.length} peserta tersimpan di Google Sheets!`, 'success');
-                    renderAppUi();
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // GENERATOR DOKUMEN PDF INSTAN (jsPDF & AutoTable)
-        function generatePDFLaporan(tipeDoc) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const idLombaCetak = document.getElementById('selectLombaCetakAdmin').value;
-            const lomba = LOMBA_LIST.find(l => l.id === idLombaCetak);
-            if (!lomba) {
-                showToast("Pilih cabang lomba terlebih dahulu!", "danger");
-                return;
-            }
-
-            let yPos = 15;
-
-            // Render Kop Surat
-            if (APP_CONFIG.kopBase64) {
-                doc.addImage(APP_CONFIG.kopBase64, 'JPEG', 15, yPos, 180, 25);
-                yPos += 30;
-            } else {
-                doc.setFontSize(14);
-                doc.setFont("helvetica", "bold");
-                doc.text(`UPTD SPF SMP NEGERI 1 BONDOWOSO`, 105, yPos, { align: "center" });
-                yPos += 6;
-                doc.setFontSize(12);
-                doc.text(`PANITIA SMARTSPASA KE-${APP_CONFIG.edisi}`, 105, yPos, { align: "center" });
-                yPos += 6;
-                doc.setLineWidth(0.5);
-                doc.line(15, yPos, 195, yPos);
-                yPos += 8;
-            }
-
-            if (tipeDoc === 'rekap') {
-                doc.setFontSize(13);
-                doc.setFont("helvetica", "bold");
-                doc.text(`REKAPITULASI HASIL NILAI PESERTA LOMBA`, 105, yPos, { align: "center" });
-                yPos += 6;
-                doc.setFontSize(10);
-                doc.setFont("helvetica", "normal");
-                doc.text(`Cabang Lomba: ${lomba.nama} (${lomba.jumlahJuri || 3} Juri)`, 105, yPos, { align: "center" });
-                yPos += 10;
-
-                const headers = [["Peringkat", "No Reg", "Nama Peserta", "Asal Sekolah", "Nilai Rata-Rata"]];
-                const listPeserta = PESERTA_LIST.filter(p => p.idLomba === idLombaCetak);
-                
-                const rows = listPeserta.map(p => {
-                    const nil = NILAI_LIST.filter(n => n.no === p.no && n.idLomba === idLombaCetak);
-                    const avg = nil.length > 0 ? (nil.reduce((a, b) => a + Number(b.nilaiAkhir || 0), 0) / nil.length).toFixed(1) : '0';
-                    return [ "", p.no, p.nama, p.sekolah, avg ];
-                }).sort((a, b) => Number(b[4]) - Number(a[4]));
-
-                rows.forEach((r, idx) => r[0] = `Juara ${idx + 1}`);
-
-                doc.autoTable({
-                    startY: yPos,
-                    head: headers,
-                    body: rows,
-                    theme: 'striped',
-                    headStyles: { fillColor: [37, 99, 235] }
-                });
-
-            } else if (tipeDoc === 'berita_acara') {
-                doc.setFontSize(13);
-                doc.setFont("helvetica", "bold");
-                doc.text(`BERITA ACARA PENETAPAN PEMENANG LOMBA`, 105, yPos, { align: "center" });
-                yPos += 8;
-                doc.setFontSize(10);
-                doc.setFont("helvetica", "normal");
-
-                const textBody = `Pada hari ini, Panitia Penyelenggara SMARTSPASA KE-${APP_CONFIG.edisi} UPTD SPF SMP Negeri 1 Bondowoso beserta Tim Penilai/Juri (${lomba.jumlahJuri || 3} Juri) telah melaksanakan penetapan hasil akhir untuk cabang lomba: ${lomba.nama}. Keputusan ini bersifat final dan tidak dapat diganggu gugat.`;
-
-                const splitText = doc.splitTextToSize(textBody, 170);
-                doc.text(splitText, 20, yPos);
-                yPos += (splitText.length * 5) + 10;
-
-                doc.setFont("helvetica", "bold");
-                doc.text("Daftar Pemenang Resmi:", 20, yPos);
-                yPos += 6;
-
-                const listPeserta = PESERTA_LIST.filter(p => p.idLomba === idLombaCetak);
-                const rows = listPeserta.map(p => {
-                    const nil = NILAI_LIST.filter(n => n.no === p.no && n.idLomba === idLombaCetak);
-                    const avg = nil.length > 0 ? (nil.reduce((a, b) => a + Number(b.nilaiAkhir || 0), 0) / nil.length).toFixed(1) : '0';
-                    return [ p.no, p.nama, p.sekolah, avg ];
-                }).sort((a, b) => Number(b[3]) - Number(a[3])).slice(0, 3);
-
-                const headers = [["No Reg", "Nama Pemenang", "Asal Sekolah", "Nilai Rata-Rata"]];
-                doc.autoTable({
-                    startY: yPos,
-                    head: headers,
-                    body: rows,
-                    theme: 'grid'
-                });
-
-            } else if (tipeDoc === 'analisis') {
-                doc.setFontSize(13);
-                doc.setFont("helvetica", "bold");
-                doc.text(`ANALISIS DATA & STATISTIK PENILAIAN`, 105, yPos, { align: "center" });
-                yPos += 6;
-                doc.setFontSize(10);
-                doc.setFont("helvetica", "normal");
-                doc.text(`Cabang Lomba: ${lomba.nama}`, 105, yPos, { align: "center" });
-                yPos += 10;
-
-                const listPeserta = PESERTA_LIST.filter(p => p.idLomba === idLombaCetak);
-                const scores = listPeserta.map(p => {
-                    const nil = NILAI_LIST.filter(n => n.no === p.no && n.idLomba === idLombaCetak);
-                    return nil.length > 0 ? (nil.reduce((a, b) => a + Number(b.nilaiAkhir || 0), 0) / nil.length) : 0;
-                });
-
-                const totalPeserta = listPeserta.length;
-                const maxScore = scores.length > 0 ? Math.max(...scores).toFixed(1) : '0';
-                const minScore = scores.length > 0 ? Math.min(...scores).toFixed(1) : '0';
-                const avgScore = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : '0';
-
-                const rowsAnalisis = [
-                    ["Total Peserta Terdaftar", `${totalPeserta} Siswa`],
-                    ["Jumlah Juri Ditugaskan", `${lomba.jumlahJuri || 3} Juri`],
-                    ["Nilai Rata-Rata Tertinggi (Max)", maxScore],
-                    ["Nilai Rata-Rata Terendah (Min)", minScore],
-                    ["Rata-Rata Keseluruhan Cabang", avgScore]
-                ];
-
-                doc.autoTable({
-                    startY: yPos,
-                    head: [["Parameter Analisis Statistik", "Hasil Nilai / Jumlah"]],
-                    body: rowsAnalisis,
-                    theme: 'plain',
-                    headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255] }
-                });
-            }
-
-            let finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 20 : yPos + 30;
-            if (finalY > 230) {
-                doc.addPage();
-                finalY = 30;
-            }
-
-            // Tanda Tangan Resmi
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            doc.text("Ketua Pelaksana Lomba,", 30, finalY);
-            doc.text("Koordinator Tim Penilai,", 130, finalY);
-
-            finalY += 25;
-
-            doc.setFont("helvetica", "bold");
-            doc.text(APP_CONFIG.ketua, 30, finalY);
-            doc.text(`Tim Juri (${lomba.jumlahJuri || 3} Juri)`, 130, finalY);
-
-            finalY += 5;
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(8);
-            doc.text(`NIP. ${APP_CONFIG.nipKetua}`, 30, finalY);
-
-            doc.save(`LAPORAN_${tipeDoc.toUpperCase()}_${lomba.nama.replace(/\s+/g, '_')}.pdf`);
-            showToast(`Dokumen PDF ${tipeDoc} berhasil diunduh!`, 'success');
-        }
-
-        // UTILITY LOADING & TOAST
-        function showLoading(show, text = "Memproses...") {
-            const overlay = document.getElementById('loadingOverlay');
-            document.getElementById('loadingText').innerText = text;
-            if (show) {
-                overlay.classList.remove('hidden');
-                overlay.classList.add('flex');
-            } else {
-                overlay.classList.add('hidden');
-                overlay.classList.remove('flex');
-            }
-        }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-
-            let bgColor = 'bg-slate-900 border-slate-700 text-white';
-            if (type === 'success') bgColor = 'bg-emerald-600 border-emerald-500 text-white';
-            if (type === 'danger') bgColor = 'bg-red-600 border-red-500 text-white';
-            if (type === 'info') bgColor = 'bg-blue-600 border-blue-500 text-white';
-
-            toast.className = `${bgColor} border px-4 py-3 rounded-xl shadow-xl text-xs font-bold flex items-center justify-between transition-all transform translate-y-2 opacity-0`;
-            toast.innerHTML = `<span>${message}</span>`;
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-    </script>
+      };
+      reader.readAsArrayBuffer(input.files[0]);
+    }
+
+    // Export PDF Berita Acara
+    function exportBeritaAcaraPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text(appConfig.title || 'SMARTSPASA', 14, 15);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(appConfig.subtitle || 'Sistem Rekapitulasi & Penjurian Terintegrasi', 14, 21);
+      doc.text(`Tanggal Cetak: ${new Date().toLocaleString('id-ID')}`, 14, 26);
+      doc.line(14, 29, 283, 29);
+
+      const selectedKat = document.getElementById('filter-kategori-leaderboard')?.value || 'ALL';
+      let filteredPeserta = databasePeserta;
+      if (selectedKat !== 'ALL') {
+        filteredPeserta = filteredPeserta.filter(p => p.jenisLomba === selectedKat);
+      }
+
+      const tableData = filteredPeserta.map((p, idx) => {
+        let grandTotal = 0;
+        let count = 0;
+        appConfig.judges.forEach(j => {
+          if (j.jenisLomba === 'ALL' || j.jenisLomba === p.jenisLomba) {
+            count++;
+            const sc = databaseNilai.find(n => n.pesertaId === p.id && n.juriId === j.id);
+            if (sc) grandTotal += sc.total;
+          }
+        });
+        const avg = count > 0 ? (grandTotal / count) : 0;
+        return [idx + 1, p.noPendaftaran, p.namaLengkap, p.asalSekolah, p.jenisLomba, grandTotal, avg.toFixed(2)];
+      });
+
+      doc.autoTable({
+        startY: 33,
+        head: [['No', 'No. Reg', 'Nama Peserta / Tim', 'Asal Sekolah', 'Kategori', 'Total Skor', 'Rata-Rata']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 9 }
+      });
+
+      doc.save(`Berita_Acara_Rekap_${appConfig.title.replace(/\s+/g, '_')}.pdf`);
+      showToast('Dokumen PDF Berita Acara berhasil diunduh!', 'success');
+    }
+
+    // Public Viewer Lookup Function
+    function handlePublicSearchSubmit() {
+      const query = document.getElementById('public-search-input')?.value.trim().toLowerCase();
+      const container = document.getElementById('public-search-results');
+      if (!container) return;
+
+      if (!query) {
+        container.innerHTML = `<p class="text-xs text-slate-500">Ketikkan nomor pendaftaran atau nama peserta.</p>`;
+        return;
+      }
+
+      const match = databasePeserta.filter(p => p.noPendaftaran.toLowerCase().includes(query) || p.namaLengkap.toLowerCase().includes(query));
+      if (match.length === 0) {
+        container.innerHTML = `<p class="text-xs text-rose-400 font-semibold">Tidak ada peserta yang cocok dengan kata kunci tersebut.</p>`;
+        return;
+      }
+
+      container.innerHTML = match.map(p => {
+        let total = 0;
+        let count = 0;
+        appConfig.judges.forEach(j => {
+          if (j.jenisLomba === 'ALL' || j.jenisLomba === p.jenisLomba) {
+            count++;
+            const sc = databaseNilai.find(n => n.pesertaId === p.id && n.juriId === j.id);
+            if (sc) total += sc.total;
+          }
+        });
+        const avg = count > 0 ? (total / count).toFixed(2) : '0.00';
+
+        return `
+          <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2 mb-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white text-sm">${p.namaLengkap} (${p.noPendaftaran})</span>
+              <span class="text-xs font-mono font-black text-emerald-400">Total: ${total} (Rata-Rata: ${avg})</span>
+            </div>
+            <p class="text-xs text-slate-400">${p.asalSekolah} • Kategori: ${p.jenisLomba}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // App Initialization Execution
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAppState();
+      applyTheme(appConfig.theme || 'dark');
+      renderKategoriDropdowns();
+      updateRoleBadge();
+      updateActiveJudgeDisplay();
+      renderLogoAndKopDisplay();
+      renderLeaderboard();
+      renderPlottingTable();
+      renderPesertaTable();
+      renderDynamicJuriConfigList();
+      renderKategoriList();
+
+      if (document.getElementById('cfg-event-title')) document.getElementById('cfg-event-title').value = appConfig.title || 'SMARTSPASA';
+      if (document.getElementById('cfg-event-subtitle')) document.getElementById('cfg-event-subtitle').value = appConfig.subtitle || '';
+      if (document.getElementById('cfg-pin-admin')) document.getElementById('cfg-pin-admin').value = appConfig.pinAdmin || '9999';
+      if (document.getElementById('cfg-pin-panitia')) document.getElementById('cfg-pin-panitia').value = appConfig.pinPanitia || '1234';
+      if (document.getElementById('cfg-pin-juri-default')) document.getElementById('cfg-pin-juri-default').value = appConfig.pinJuriDefault || '1111';
+      if (document.getElementById('cfg-gas-web-url')) document.getElementById('cfg-gas-web-url').value = gasWebAppUrl || '';
+      if (document.getElementById('cfg-spreadsheet-link')) document.getElementById('cfg-spreadsheet-link').value = mainSpreadsheetLink || '';
+
+      updateHeaderTitleLive();
+      switchTab(activeTab || 'leaderboard', true);
+    });
+  </script>
 </body>
 </html>
