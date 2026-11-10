@@ -517,7 +517,7 @@
               <p class="text-xs text-slate-400">Atur juri, PIN akses juri, tugas kategori lomba, dan sub-kriteria penilaian masing-masing.</p>
             </div>
 
-            <button onclick="openModalAddJudge()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-900/20 flex items-center gap-2">
+            <button id="btn-add-juri" onclick="openModalAddJudge()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-900/20 flex items-center gap-2">
               <i class="fa-solid fa-plus"></i>
               <span>Tambah Juri</span>
             </button>
@@ -597,62 +597,15 @@
         </button>
       </div>
 
-      <div class="space-y-3">
-        <!-- Public -->
-        <label onclick="selectRoleChoice('PUBLIC')" class="flex items-center justify-between p-3 rounded-xl border border-slate-700/60 light:border-slate-200 cursor-pointer hover:border-blue-500 transition-all">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-slate-300">
-              <i class="fa-solid fa-eye text-xs"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-slate-100 light:text-slate-900">Public Viewer</p>
-              <p class="text-[10px] text-slate-400">Lihat papan skor & rekapitulasi (Tanpa PIN)</p>
-            </div>
-          </div>
-          <input type="radio" name="role_choice" value="PUBLIC" class="text-blue-600">
-        </label>
-
-        <!-- Panitia -->
-        <label onclick="selectRoleChoice('PANITIA')" class="flex items-center justify-between p-3 rounded-xl border border-slate-700/60 light:border-slate-200 cursor-pointer hover:border-blue-500 transition-all">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center">
-              <i class="fa-solid fa-user-gear text-xs"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-slate-100 light:text-slate-900">Panitia Penyelenggara</p>
-              <p class="text-[10px] text-slate-400">Kelola peserta & plotting juri</p>
-            </div>
-          </div>
-          <input type="radio" name="role_choice" value="PANITIA" class="text-blue-600">
-        </label>
-
-        <!-- Juri -->
-        <label onclick="selectRoleChoice('JURI')" class="flex items-center justify-between p-3 rounded-xl border border-slate-700/60 light:border-slate-200 cursor-pointer hover:border-blue-500 transition-all">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center">
-              <i class="fa-solid fa-gavel text-xs"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-slate-100 light:text-slate-900">Juri Penilai</p>
-              <p class="text-[10px] text-slate-400">Input nilai evaluasi peserta</p>
-            </div>
-          </div>
-          <input type="radio" name="role_choice" value="JURI" class="text-blue-600">
-        </label>
-
-        <!-- Super Admin -->
-        <label onclick="selectRoleChoice('ADMIN')" class="flex items-center justify-between p-3 rounded-xl border border-slate-700/60 light:border-slate-200 cursor-pointer hover:border-blue-500 transition-all">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-rose-600/20 text-rose-400 flex items-center justify-center">
-              <i class="fa-solid fa-shield-halved text-xs"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-slate-100 light:text-slate-900">Super Admin</p>
-              <p class="text-[10px] text-slate-400">Akses penuh sistem & integrasi Google Sheets</p>
-            </div>
-          </div>
-          <input type="radio" name="role_choice" value="ADMIN" class="text-blue-600">
-        </label>
+      <!-- Dropdown Role Selection -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 light:text-slate-700 mb-1">Pilih Peranan Akses Pengguna</label>
+        <select id="select-role-choice" onchange="selectRoleChoice(this.value)" class="w-full px-3 py-2.5 text-xs font-semibold rounded-xl bg-slate-800 light:bg-white border border-slate-700 light:border-slate-200 text-slate-100 light:text-slate-800 focus:outline-none focus:border-blue-500">
+          <option value="PUBLIC">Public Viewer (Tanpa PIN)</option>
+          <option value="PANITIA">Panitia Penyelenggara</option>
+          <option value="JURI">Juri Penilai</option>
+          <option value="ADMIN">Super Admin</option>
+        </select>
       </div>
 
       <!-- Specific Juri Selection (If Role == JURI) -->
@@ -812,19 +765,16 @@
     pinJuriDefault: '1111',
     logo: '',
     kop: '',
-    kategori: ['Utama', 'Madya', 'Mula'],
-    judges: [
-      { id: 'JURI1', name: 'Juri 1 - PBB Dasar', jenisLomba: 'ALL', pin: '1111', criteria: ['PBB Dasar (0-100)', 'PBB Berjalan (0-100)', 'Formasi & Kerapihan (0-100)'] },
-      { id: 'JURI2', name: 'Juri 2 - Vokal & Musik', jenisLomba: 'ALL', pin: '2222', criteria: ['Teknik Vokal (0-100)', 'Harmonisasi (0-100)', 'Penampilan (0-100)'] }
-    ]
+    kategori: [],
+    judges: []
   };
 
-  // Clean Initial State: NO initial mock data for Peserta and Nilai
+  // Clean Initial State: NO initial mock data for Peserta, Nilai, or Judges
   let databasePeserta = [];
   let databaseNilai = [];
   let currentUser = { role: 'PUBLIC', name: 'Public Viewer', id: null };
   let activeTab = 'leaderboard';
-  let activeJudgeId = 'JURI1';
+  let activeJudgeId = '';
   let mainSpreadsheetLink = '';
   let gasWebAppUrl = '';
   let pendingConfirmCallback = null;
@@ -978,6 +928,8 @@
   function switchTab(tabId, isInitial = false) {
     if (currentUser.role === 'PUBLIC' && tabId !== 'leaderboard') {
       tabId = 'leaderboard';
+    } else if (currentUser.role === 'PANITIA' && (tabId === 'juri-panel' || tabId === 'config')) {
+      tabId = 'leaderboard';
     }
     activeTab = tabId;
     const tabs = ['leaderboard', 'juri-panel', 'plotting', 'peserta', 'config'];
@@ -1039,13 +991,13 @@
       badgeIcon.className = 'w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold';
       if (btnPdf) btnPdf.classList.remove('hidden');
       if (btnExcel) btnExcel.classList.remove('hidden');
-      if (navJuri) navJuri.classList.remove('hidden');
+      if (navJuri) navJuri.classList.add('hidden');
       if (navPlotting) navPlotting.classList.remove('hidden');
-      if (navPeserta) navPeserta.classList.remove('hidden');
-      if (navConfig) navConfig.classList.remove('hidden');
-      if (adminConfigSection) adminConfigSection.classList.add('hidden'); // STRICTLY HIDDEN for Panitia
-      if (identityConfigSection) identityConfigSection.classList.add('hidden'); // HIDDEN for Panitia
-      if (kategoriConfigSection) kategoriConfigSection.classList.add('hidden'); // HIDDEN for Panitia
+      if (navPeserta) navPeserta.classList.remove('hidden'); // DIBUKA UNTUK PANITIA
+      if (navConfig) navConfig.classList.add('hidden'); // PENGATURAN & TAMBAH JURI DIBATASI KHUSUS ADMIN
+      if (adminConfigSection) adminConfigSection.classList.add('hidden');
+      if (identityConfigSection) identityConfigSection.classList.add('hidden');
+      if (kategoriConfigSection) kategoriConfigSection.classList.add('hidden');
     } else if (currentUser.role.startsWith('JURI')) {
       const juriObj = appConfig.judges.find(j => j.id === currentUser.role);
       badgeName.textContent = juriObj ? juriObj.name : 'Juri Penilai';
@@ -1079,6 +1031,16 @@
 
   // Role Switching Modals
   function openRoleSwitchModal() {
+    const roleSelect = document.getElementById('select-role-choice');
+    let currentRoleVal = 'PUBLIC';
+    if (currentUser.role === 'ADMIN') currentRoleVal = 'ADMIN';
+    else if (currentUser.role === 'PANITIA') currentRoleVal = 'PANITIA';
+    else if (currentUser.role.startsWith('JURI')) currentRoleVal = 'JURI';
+
+    if (roleSelect) {
+      roleSelect.value = currentRoleVal;
+      selectRoleChoice(currentRoleVal);
+    }
     document.getElementById('modal-role-switch').classList.remove('hidden');
   }
 
@@ -1115,10 +1077,7 @@
   }
 
   function confirmRoleSwitch() {
-    const radios = document.getElementsByName('role_choice');
-    let chosenRole = 'PUBLIC';
-    radios.forEach(r => { if (r.checked) chosenRole = r.value; });
-
+    const chosenRole = document.getElementById('select-role-choice').value || 'PUBLIC';
     const pinInput = document.getElementById('input-role-pin').value;
     const juriSelect = document.getElementById('role-select-juri-id').value;
 
@@ -1150,6 +1109,7 @@
         showToast('Login Panitia Berhasil', 'success');
         closeRoleSwitchModal();
         updateRoleBadge();
+        switchTab('leaderboard');
         return;
       } else {
         showToast('PIN Panitia Salah!', 'error');
@@ -1294,6 +1254,13 @@
     const select = document.getElementById('select-active-juri');
     select.innerHTML = '';
     
+    if (appConfig.judges.length === 0) {
+      select.innerHTML = `<option value="">Belum ada juri terdaftar</option>`;
+      select.disabled = true;
+      document.getElementById('juri-assigned-kategori-text').textContent = `Tugas Kategori: -`;
+      return;
+    }
+
     appConfig.judges.forEach(j => {
       const opt = document.createElement('option');
       opt.value = j.id;
@@ -1310,8 +1277,9 @@
       select.disabled = false;
     }
 
-    const currentJuriObj = appConfig.judges.find(j => j.id === activeJudgeId);
+    const currentJuriObj = appConfig.judges.find(j => j.id === activeJudgeId) || appConfig.judges[0];
     if (currentJuriObj) {
+      activeJudgeId = currentJuriObj.id;
       document.getElementById('juri-assigned-kategori-text').textContent = `Tugas Kategori: ${currentJuriObj.jenisLomba}`;
     }
   }
@@ -1696,17 +1664,21 @@
     const container = document.getElementById('container-kategori-list');
     container.innerHTML = '';
 
-    appConfig.kategori.forEach((kat, idx) => {
-      const badge = document.createElement('div');
-      badge.className = "flex items-center gap-2 px-3 py-1 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xs font-semibold";
-      badge.innerHTML = `
-        <span>${kat}</span>
-        <button onclick="removeKategori(${idx})" class="text-indigo-400 hover:text-rose-400 transition-colors">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      `;
-      container.appendChild(badge);
-    });
+    if (appConfig.kategori.length === 0) {
+      container.innerHTML = `<p class="text-xs text-slate-500 italic">Belum ada kategori lomba. Silakan tambahkan di atas.</p>`;
+    } else {
+      appConfig.kategori.forEach((kat, idx) => {
+        const badge = document.createElement('div');
+        badge.className = "flex items-center gap-2 px-3 py-1 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xs font-semibold";
+        badge.innerHTML = `
+          <span>${kat}</span>
+          <button onclick="removeKategori(${idx})" class="text-indigo-400 hover:text-rose-400 transition-colors">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        `;
+        container.appendChild(badge);
+      });
+    }
 
     renderKategoriDropdowns();
   }
@@ -1753,10 +1725,6 @@
   }
 
   function removeKategori(idx) {
-    if (appConfig.kategori.length <= 1) {
-      showToast('Minimal harus ada 1 kategori lomba.', 'error');
-      return;
-    }
     appConfig.kategori.splice(idx, 1);
     saveAppState();
     renderKategoriList();
@@ -1765,6 +1733,18 @@
   function renderDynamicJuriConfigList() {
     const container = document.getElementById('container-juri-config-list');
     container.innerHTML = '';
+
+    const isAdmin = currentUser.role === 'ADMIN';
+    const btnAddJuri = document.getElementById('btn-add-juri');
+    if (btnAddJuri) {
+      if (isAdmin) btnAddJuri.classList.remove('hidden');
+      else btnAddJuri.classList.add('hidden');
+    }
+
+    if (appConfig.judges.length === 0) {
+      container.innerHTML = `<div class="col-span-full text-center py-6 text-xs text-slate-500 italic">Belum ada juri penilai. Klik "Tambah Juri" untuk menambahkan juri baru.</div>`;
+      return;
+    }
 
     appConfig.judges.forEach((j, idx) => {
       const card = document.createElement('div');
@@ -1781,10 +1761,12 @@
             ${j.criteria.map(c => `<li>${c}</li>`).join('')}
           </ul>
         </div>
+        ${isAdmin ? `
         <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-700/40">
           <button onclick="openModalEditJudge('${j.id}')" class="px-2.5 py-1 rounded-lg bg-slate-700 text-slate-200 text-xs font-semibold hover:bg-blue-600">Edit</button>
           <button onclick="confirmDeleteJuri('${j.id}')" class="px-2.5 py-1 rounded-lg bg-slate-700 text-slate-200 text-xs font-semibold hover:bg-rose-600">Hapus</button>
         </div>
+        ` : ''}
       `;
       container.appendChild(card);
     });
@@ -1795,7 +1777,7 @@
     document.getElementById('edit-juri-id').value = '';
     document.getElementById('input-juri-nama').value = `Juri ${appConfig.judges.length + 1}`;
     document.getElementById('input-juri-pin').value = '1111';
-    document.getElementById('input-juri-criteria').value = 'PBB Dasar (0-100), PBB Berjalan (0-100), Formasi & Kerapihan (0-100)';
+    document.getElementById('input-juri-criteria').value = 'Kriteria 1, Kriteria 2, Kriteria 3';
     
     populateJuriCategoryDropdown();
     document.getElementById('modal-juri').classList.remove('hidden');
@@ -1809,10 +1791,11 @@
     document.getElementById('edit-juri-id').value = j.id;
     document.getElementById('input-juri-nama').value = j.name;
     document.getElementById('input-juri-pin').value = j.pin;
-    document.getElementById('input-juri-criteria').value = j.criteria.join(', ');
-
+    
     populateJuriCategoryDropdown();
-    document.getElementById('input-juri-kategori').value = j.jenisLomba;
+    document.getElementById('input-juri-kategori').value = j.jenisLomba || 'ALL';
+    document.getElementById('input-juri-criteria').value = (j.criteria || []).join(', ');
+    
     document.getElementById('modal-juri').classList.remove('hidden');
   }
 
