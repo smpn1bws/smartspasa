@@ -2093,15 +2093,29 @@
       .then(res => res.json())
       .then(res => {
         if (res.status === 'success') {
-          if (res.peserta) databasePeserta = res.peserta;
-          if (res.nilai) databaseNilai = res.nilai;
-          if (res.juri) appConfig.judges = res.juri;
+          if (res.peserta && Array.isArray(res.peserta)) databasePeserta = res.peserta;
+          if (res.nilai && Array.isArray(res.nilai)) databaseNilai = res.nilai;
+          if (res.juri && Array.isArray(res.juri)) appConfig.judges = res.juri;
           if (res.config) {
             if (res.config.EVENT_TITLE) appConfig.title = res.config.EVENT_TITLE;
             if (res.config.EVENT_SUBTITLE) appConfig.subtitle = res.config.EVENT_SUBTITLE;
+            if (res.config.KATEGORI) {
+              try {
+                const kat = typeof res.config.KATEGORI === 'string' ? JSON.parse(res.config.KATEGORI) : res.config.KATEGORI;
+                if (Array.isArray(kat) && kat.length > 0) appConfig.kategori = kat;
+              } catch(e){}
+            }
+            if (res.config.PIN_ADMIN) appConfig.pinAdmin = res.config.PIN_ADMIN;
+            if (res.config.PIN_PANITIA) appConfig.pinPanitia = res.config.PIN_PANITIA;
+            if (res.config.LOGO_URI) appConfig.logo = res.config.LOGO_URI;
+            if (res.config.KOP_URI) appConfig.kop = res.config.KOP_URI;
           }
           saveAppState();
           updateHeaderTitleLive();
+          renderLogoAndKopDisplay();
+          renderKategoriList();
+          renderKategoriDropdowns();
+          renderDynamicJuriConfigList();
           switchTab(activeTab);
           showToast('Data terbaru berhasil dimuat dari Google Sheets.', 'success');
         }
