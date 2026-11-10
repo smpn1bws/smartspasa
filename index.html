@@ -775,7 +775,7 @@
         mainSpreadsheetLink
       };
       try {
-        localStorage.setItem('rekap_komando_v3_state', JSON.stringify(stateToSave));
+        localStorage.setItem('https://docs.google.com/spreadsheets/d/1OBVe7q8tXAEvbDuNNCp3h9yZu7rPaozv4vyQduW5eRw/edit', JSON.stringify(stateToSave));
       } catch (e) {
         console.warn('LocalStorage disabled or limited:', e);
       }
@@ -810,7 +810,7 @@
 
     function loadAppState() {
       try {
-        const saved = localStorage.getItem('rekap_komando_v3_state');
+        const saved = localStorage.getItem('https://docs.google.com/spreadsheets/d/1OBVe7q8tXAEvbDuNNCp3h9yZu7rPaozv4vyQduW5eRw/edit');
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed.currentUserRole) currentUserRole = parsed.currentUserRole;
